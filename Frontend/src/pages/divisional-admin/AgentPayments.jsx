@@ -1,0 +1,92 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { dataService } from '../../services/dataService';
+import { DataTable } from '../../components/DataTable';
+import { StatusBadge } from '../../components/Badge';
+import { UserPlus } from 'lucide-react';
+
+export function DivisionalAgentPayments() {
+  const { user } = useAuth();
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await dataService.getAgentPayments();
+      if (res.success) setPayments(res.payments);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const columns = [
+    {
+      header: 'Agent Details',
+      accessor: 'agentName',
+      render: (row) => (
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-950 text-purple-600">
+            <UserPlus className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-slate-900 dark:text-white text-xs">{row.agentName}</div>
+            <div className="text-[11px] text-slate-500 font-mono">Txn: {row.transactionId}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Commission Amount',
+      accessor: 'amount',
+      render: (row) => <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">₹{row.amount?.toLocaleString()}</span>
+    },
+    {
+      header: 'Commission Type',
+      accessor: 'type',
+      render: (row) => (
+        <span className="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+          {row.type}
+        </span>
+      )
+    },
+    {
+      header: 'Date',
+      accessor: 'date',
+      render: (row) => <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">{row.date}</span>
+    },
+    {
+      header: 'Payment Status',
+      accessor: 'status',
+      render: (row) => <StatusBadge status={row.status} />
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Division Agent Payments</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Agent commission payouts and referral settlements within {user?.division || 'Salem North'} Division.
+        </p>
+      </div>
+
+      <DataTable
+        title="Agent Commissions Ledger"
+        subtitle="Manage agent incentive disbursements within division territory"
+        columns={columns}
+        data={payments}
+        loading={loading}
+        onRefresh={loadData}
+        searchPlaceholder="Search agent or transaction ID..."
+        exportFileName="division_agent_payments.csv"
+      />
+    </div>
+  );
+}

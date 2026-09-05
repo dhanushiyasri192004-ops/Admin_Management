@@ -1,0 +1,110 @@
+import React, { useState, useEffect } from 'react';
+import { dataService } from '../../services/dataService';
+import { DataTable } from '../../components/DataTable';
+import { TierBadge, StatusBadge } from '../../components/Badge';
+import { Users, Phone, MapPin } from 'lucide-react';
+
+export function StateCustomers() {
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tierFilter, setTierFilter] = useState('');
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await dataService.getCustomers({ tier: tierFilter });
+      if (res.success) setCustomers(res.customers);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [tierFilter]);
+
+  const columns = [
+    {
+      header: 'Customer Details',
+      accessor: 'name',
+      render: (row) => (
+        <div>
+          <div className="font-bold text-white text-sm">{row.name}</div>
+          <div className="text-[11px] text-slate-400">{row.email}</div>
+          <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
+            <Phone className="w-3 h-3 text-slate-500" />
+            {row.phone}
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Membership Tier',
+      accessor: (row) => row.membership?.tier,
+      render: (row) => (
+        <div>
+          <TierBadge tier={row.membership?.tier} />
+          <div className="text-[10px] text-slate-400 font-mono mt-1">
+            {row.membership?.cardNumber}
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Geographic Scope',
+      accessor: 'pincode',
+      render: (row) => (
+        <div className="space-y-0.5">
+          <div className="font-semibold text-slate-200">{row.district} / {row.division}</div>
+          <div className="text-xs font-mono text-emerald-400 flex items-center gap-1">
+            <MapPin className="w-3 h-3" /> PIN: {row.pincode}
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Orders & Spend',
+      accessor: 'totalSpent',
+      render: (row) => (
+        <div>
+          <div className="font-bold text-white">₹{row.totalSpent?.toLocaleString()}</div>
+          <div className="text-[11px] text-slate-400">{row.totalOrders} total orders</div>
+        </div>
+      )
+    },
+    {
+      header: 'Status',
+      accessor: 'status',
+      render: (row) => <StatusBadge status={row.status} />
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-white">State Customer Directory</h2>
+        <p className="text-xs text-slate-400">All registered customers within assigned state jurisdiction.</p>
+      </div>
+
+      <DataTable
+        title="Customer Profiles & Membership Tiers"
+        subtitle="Filter by Silver, Gold, or Diamond tiers"
+        columns={columns}
+        data={customers}
+        loading={loading}
+        onRefresh={loadData}
+        filterOptions={[
+          { label: 'All Tiers (Silver/Gold/Diamond)', value: '' },
+          { label: 'Diamond Card', value: 'Diamond' },
+          { label: 'Gold Card', value: 'Gold' },
+          { label: 'Silver Card', value: 'Silver' },
+        ]}
+        activeFilter={tierFilter}
+        onFilterChange={setTierFilter}
+        exportFileName="state_customers.csv"
+      />
+    </div>
+  );
+}

@@ -1,0 +1,220 @@
+import React, { useState, useMemo } from 'react';
+import { SearchBar } from './SearchBar';
+import { Pagination } from './Pagination';
+import { useTheme } from '../context/ThemeContext';
+import { Download, Filter, RefreshCw } from 'lucide-react';
+
+export function DataTable({
+  columns,
+  data = [],
+  loading = false,
+  searchPlaceholder = 'Search records...',
+  filterOptions = null,
+  activeFilter = '',
+  onFilterChange = null,
+  onRefresh = null,
+  title = '',
+  subtitle = '',
+  actions = null,
+  exportFileName = 'export.csv',
+  itemsPerPage = 8
+}) {
+  const { isDark } = useTheme();
+  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Client-side search filtering
+  const filteredData = useMemo(() => {
+    if (!search.trim()) return data;
+    const q = search.toLowerCase();
+    return data.filter(item => {
+      return Object.values(item).some(val => {
+        if (typeof val === 'string' || typeof val === 'number') {
+          return String(val).toLowerCase().includes(q);
+        }
+        if (val && typeof val === 'object') {
+          return Object.values(val).some(nestedVal =>
+            String(nestedVal).toLowerCase().includes(q)
+          );
+        }
+        return false;
+      });
+    });
+  }, [data, search]);
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(start, start + itemsPerPage);
+  }, [filteredData, currentPage, itemsPerPage]);
+
+  const handleExportCSV = () => {
+    if (filteredData.length === 0) return;
+    const headers = columns.map(c => c.header).join(',');
+    const rows = filteredData.map(item => {
+      return columns.map(c => {
+        const val = typeof c.accessor === 'function' ? c.accessor(item) : item[c.accessor];
+        return `"${String(val || '').replace(/"/g, '""')}"`;
+      }).join(',');
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', exportFileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className={`admin-card overflow-hidden ${
+      isDark
+        ? 'bg-[#131f37] border-[#1f3358] text-slate-300'
+        : 'bg-white border-slate-200/90 text-slate-800 shadow-sm'
+    } border rounded-2xl transition-colors`}>
+      {/* Header Bar */}
+      <div className={`p-5 border-b ${
+        isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50/50'
+      } flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors`}>
+        <div>
+          {title && (
+            <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              {title}
+            </h3>
+          )}
+          {subtitle && (
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
+              {subtitle}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
+          <SearchBar
+            value={search}
+            onChange={(val) => {
+              setSearch(val);
+              setCurrentPage(1);
+            }}
+            placeholder={searchPlaceholder}
+            className="w-full sm:w-64"
+          />
+
+          {filterOptions && onFilterChange && (
+            <div className={`flex items-center gap-1.5 ${
+              isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+            } border rounded-xl px-2.5 py-1.5 text-xs transition-colors`}>
+              <Filter className="w-3.5 h-3.5 text-slate-400" />
+              <select
+                value={activeFilter}
+                onChange={(e) => onFilterChange(e.target.value)}
+                className={`bg-transparent border-none ${isDark ? 'text-slate-200' : 'text-slate-800'} text-xs focus:outline-none cursor-pointer`}
+              >
+                {filterOptions.map(opt => (
+                  <option key={opt.value} value={opt.value} className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {onRefresh && (
+            <button
+              type="button"
+              onClick={onRefresh}
+              title="Refresh Data"
+              className={`p-2 ${
+                isDark
+                  ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                  : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+              } border rounded-xl transition cursor-pointer`}
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            title="Export to CSV"
+            className={`inline-flex items-center gap-1.5 px-3 py-2 ${
+              isDark
+                ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+            } border rounded-xl text-xs font-semibold transition cursor-pointer`}
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+
+          {actions}
+        </div>
+      </div>
+
+      {/* Table Body */}
+      <div className="overflow-x-auto">
+        <table className={`w-full text-left text-xs ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
+          <thead className={`${
+            isDark ? 'bg-slate-950/60 text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-200'
+          } uppercase tracking-wider text-[11px] border-b transition-colors`}>
+            <tr>
+              {columns.map((col, idx) => (
+                <th key={idx} className={`px-5 py-3.5 font-semibold ${col.className || ''}`}>
+                  {col.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className={`divide-y ${isDark ? 'divide-slate-800/60' : 'divide-slate-100'} transition-colors`}>
+            {loading ? (
+              Array.from({ length: 4 }).map((_, rIdx) => (
+                <tr key={rIdx} className="animate-pulse">
+                  {columns.map((_, cIdx) => (
+                    <td key={cIdx} className="px-5 py-4">
+                      <div className={`h-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'} rounded w-3/4`}></div>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-5 py-12 text-center text-slate-400">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>No records found</p>
+                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Try adjusting your search or filters.</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((row, rowIdx) => (
+                <tr key={row.id || rowIdx} className={`${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'} transition-colors`}>
+                  {columns.map((col, colIdx) => (
+                    <td key={colIdx} className={`px-5 py-3.5 ${col.className || ''}`}>
+                      {col.render ? col.render(row) : (
+                        typeof col.accessor === 'function' ? col.accessor(row) : row[col.accessor]
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      {!loading && filteredData.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={filteredData.length}
+          itemsPerPage={itemsPerPage}
+        />
+      )}
+    </div>
+  );
+}

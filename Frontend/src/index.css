@@ -1,0 +1,242 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  color-scheme: light;
+}
+
+html.dark, body.dark, [data-theme="dark"], .dark {
+  --bg-page: #0b1322;
+  --bg-card: #131f37;
+  --bg-subtle: #1a2a4a;
+  --border-subtle: #1f3358;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  color-scheme: dark;
+}
+
+html.light, body.light, [data-theme="light"], .light {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  color-scheme: light;
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.45);
+}
+
+html.dark ::-webkit-scrollbar-thumb, .dark ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover, .dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Global Cards Theme Rules */
+.admin-card {
+  border-radius: 1rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+html.light .admin-card, body.light .admin-card, .light .admin-card, [data-theme="light"] .admin-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+html.dark .admin-card, body.dark .admin-card, .dark .admin-card, [data-theme="dark"] .admin-card {
+  background-color: #131f37 !important;
+  border: 1px solid #1f3358 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Strict Light Mode Overrides for Dark Icon Backgrounds */
+html.light [class*="dark:bg-blue-950"], body.light [class*="dark:bg-blue-950"], .light [class*="dark:bg-blue-950"], [data-theme="light"] [class*="dark:bg-blue-950"] {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+html.light [class*="dark:bg-indigo-950"], body.light [class*="dark:bg-indigo-950"], .light [class*="dark:bg-indigo-950"], [data-theme="light"] [class*="dark:bg-indigo-950"] {
+  background-color: #eef2ff !important;
+  color: #4f46e5 !important;
+}
+
+html.light [class*="dark:bg-sky-950"], body.light [class*="dark:bg-sky-950"], .light [class*="dark:bg-sky-950"], [data-theme="light"] [class*="dark:bg-sky-950"] {
+  background-color: #f0f9ff !important;
+  color: #0284c7 !important;
+}
+
+html.light [class*="dark:bg-amber-950"], body.light [class*="dark:bg-amber-950"], .light [class*="dark:bg-amber-950"], [data-theme="light"] [class*="dark:bg-amber-950"] {
+  background-color: #fffbeb !important;
+  color: #d97706 !important;
+}
+
+html.light [class*="dark:bg-emerald-950"], body.light [class*="dark:bg-emerald-950"], .light [class*="dark:bg-emerald-950"], [data-theme="light"] [class*="dark:bg-emerald-950"] {
+  background-color: #ecfdf5 !important;
+  color: #059669 !important;
+}
+
+html.light [class*="dark:bg-purple-950"], body.light [class*="dark:bg-purple-950"], .light [class*="dark:bg-purple-950"], [data-theme="light"] [class*="dark:bg-purple-950"] {
+  background-color: #faf5ff !important;
+  color: #9333ea !important;
+}
+
+html.light [class*="dark:bg-cyan-950"], body.light [class*="dark:bg-cyan-950"], .light [class*="dark:bg-cyan-950"], [data-theme="light"] [class*="dark:bg-cyan-950"] {
+  background-color: #ecfeff !important;
+  color: #0891b2 !important;
+}
+
+html.light [class*="dark:bg-rose-950"], body.light [class*="dark:bg-rose-950"], .light [class*="dark:bg-rose-950"], [data-theme="light"] [class*="dark:bg-rose-950"] {
+  background-color: #fff1f2 !important;
+  color: #e11d48 !important;
+}
+
+html.light [class*="dark:bg-teal-950"], body.light [class*="dark:bg-teal-950"], .light [class*="dark:bg-teal-950"], [data-theme="light"] [class*="dark:bg-teal-950"] {
+  background-color: #f0fdfa !important;
+  color: #0d9488 !important;
+}
+
+html.light [class*="dark:bg-orange-950"], body.light [class*="dark:bg-orange-950"], .light [class*="dark:bg-orange-950"], [data-theme="light"] [class*="dark:bg-orange-950"] {
+  background-color: #fff7ed !important;
+  color: #ea580c !important;
+}
+
+/* Strict Light Mode Overrides for Slate Containers, Breadcrumbs & Sub-Cards */
+html.light [class*="dark:bg-slate-800"], body.light [class*="dark:bg-slate-800"], .light [class*="dark:bg-slate-800"], [data-theme="light"] [class*="dark:bg-slate-800"] {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+html.light [class*="dark:bg-slate-900"], body.light [class*="dark:bg-slate-900"], .light [class*="dark:bg-slate-900"], [data-theme="light"] [class*="dark:bg-slate-900"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light [class*="dark:bg-slate-950"], body.light [class*="dark:bg-slate-950"], .light [class*="dark:bg-slate-950"], [data-theme="light"] [class*="dark:bg-slate-950"] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+html.light [class*="dark:border-slate-700"], body.light [class*="dark:border-slate-700"], .light [class*="dark:border-slate-700"], [data-theme="light"] [class*="dark:border-slate-700"] {
+  border-color: #e2e8f0 !important;
+}
+
+html.light [class*="dark:border-slate-800"], body.light [class*="dark:border-slate-800"], .light [class*="dark:border-slate-800"], [data-theme="light"] [class*="dark:border-slate-800"] {
+  border-color: #e2e8f0 !important;
+}
+
+html.light [class*="dark:border-indigo-800"], body.light [class*="dark:border-indigo-800"], .light [class*="dark:border-indigo-800"] {
+  border-color: #c7d2fe !important;
+}
+
+html.light [class*="dark:border-cyan-800"], body.light [class*="dark:border-cyan-800"], .light [class*="dark:border-cyan-800"] {
+  border-color: #a5f3fc !important;
+}
+
+html.light [class*="dark:border-emerald-800"], body.light [class*="dark:border-emerald-800"], .light [class*="dark:border-emerald-800"] {
+  border-color: #a7f3d0 !important;
+}
+
+/* Global Headings Theme Rules (prevents white-on-white text in light mode) */
+html.light h1:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+html.light h2:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+html.light h3:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+html.light h4:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h1:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h2:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h3:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h4:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h1:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h2:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h3:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h4:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]) {
+  color: #0f172a !important;
+}
+
+/* Global Tables Theme Rules */
+html.light thead, body.light thead, .light thead {
+  background-color: #f8fafc !important;
+  color: #64748b !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+html.dark thead, body.dark thead, .dark thead {
+  background-color: rgba(2, 6, 23, 0.6) !important;
+  color: #94a3b8 !important;
+  border-bottom-color: #1e293b !important;
+}
+
+html.light tbody, body.light tbody, .light tbody {
+  color: #1e293b !important;
+}
+
+html.light tbody tr:hover, body.light tbody tr:hover, .light tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+html.dark tbody tr:hover, body.dark tbody tr:hover, .dark tbody tr:hover {
+  background-color: rgba(30, 41, 59, 0.4) !important;
+}
+
+/* Membership Card Gradients (consistent across themes) */
+.card-tier-diamond {
+  background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 25%, #6366f1 75%, #4338ca 100%) !important;
+  box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.4);
+}
+.card-tier-diamond * {
+  color: #ffffff !important;
+}
+
+.card-tier-gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 35%, #d97706 70%, #78350f 100%) !important;
+  box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.35);
+}
+.card-tier-gold * {
+  color: #ffffff !important;
+}
+
+.card-tier-silver {
+  background: linear-gradient(135deg, #94a3b8 0%, #cbd5e1 35%, #64748b 70%, #334155 100%) !important;
+  box-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.3);
+}
+.card-tier-silver * {
+  color: #ffffff !important;
+}
