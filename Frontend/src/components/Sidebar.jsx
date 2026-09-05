@@ -99,8 +99,16 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'Technicians', path: '/state-admin/technicians', icon: Wrench },
           { name: 'Executives', path: '/state-admin/executives', icon: UserCheck },
           { name: 'Support Team', path: '/state-admin/support-team', icon: Headphones },
-          { name: 'Agents', path: '/state-admin/agents', icon: UserPlus },
-          { name: 'Agent Payments', path: '/state-admin/agent-payments', icon: IndianRupee },
+        ]
+      },
+      {
+        title: 'Agents',
+        items: [
+          { name: 'State Agent', path: '/state-admin/agents/state', icon: UserPlus },
+          { name: 'District Agent', path: '/state-admin/agents/district', icon: Building2 },
+          { name: 'Divisional Agent', path: '/state-admin/agents/divisional', icon: Layers },
+          { name: 'Pincode Agent', path: '/state-admin/agents/pincode', icon: MapPin },
+          { name: 'Agents Payment', path: '/state-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {

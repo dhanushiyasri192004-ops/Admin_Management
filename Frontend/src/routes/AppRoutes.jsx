@@ -157,8 +157,11 @@ export function AppRoutes() {
             <Route path="/state-admin/delivery-partners" element={<StateDeliveryPartners />} />
             <Route path="/state-admin/technicians" element={<StateTechnicians />} />
             <Route path="/state-admin/executives" element={<StateExecutives />} />
-            <Route path="/state-admin/support-team" element={<StateSupportTeam />} />
-            <Route path="/state-admin/agents" element={<StateAgents />} />
+            <Route path="/state-admin/agents" element={<StateAgents level="state" />} />
+            <Route path="/state-admin/agents/state" element={<StateAgents level="state" />} />
+            <Route path="/state-admin/agents/district" element={<StateAgents level="district" />} />
+            <Route path="/state-admin/agents/divisional" element={<StateAgents level="divisional" />} />
+            <Route path="/state-admin/agents/pincode" element={<StateAgents level="pincode" />} />
             <Route path="/state-admin/agent-payments" element={<StateAgentPayments />} />
             <Route path="/state-admin/kyc" element={<StateKYC />} />
             <Route path="/state-admin/payments" element={<StatePayments />} />
