@@ -68,111 +68,166 @@ html.dark ::-webkit-scrollbar-thumb:hover, .dark ::-webkit-scrollbar-thumb:hover
 }
 
 /* Global Cards Theme Rules */
-.admin-card {
+.admin-card, .glass-panel {
   border-radius: 1rem;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-html.light .admin-card, body.light .admin-card, .light .admin-card, [data-theme="light"] .admin-card {
+html.light .admin-card, body.light .admin-card, .light .admin-card, [data-theme="light"] .admin-card,
+html.light .glass-panel, body.light .glass-panel, .light .glass-panel, [data-theme="light"] .glass-panel {
   background-color: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
 }
 
-html.dark .admin-card, body.dark .admin-card, .dark .admin-card, [data-theme="dark"] .admin-card {
+html.dark .admin-card, body.dark .admin-card, .dark .admin-card, [data-theme="dark"] .admin-card,
+html.dark .glass-panel, body.dark .glass-panel, .dark .glass-panel, [data-theme="dark"] .glass-panel {
   background-color: #131f37 !important;
   border: 1px solid #1f3358 !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
 }
 
-/* Strict Light Mode Overrides for Dark Icon Backgrounds */
-html.light [class*="dark:bg-blue-950"], body.light [class*="dark:bg-blue-950"], .light [class*="dark:bg-blue-950"], [data-theme="light"] [class*="dark:bg-blue-950"] {
+/* Strict Light Mode Overrides for Dark Icon & Badge Backgrounds */
+html.light [class*="bg-blue-950"], body.light [class*="bg-blue-950"], .light [class*="bg-blue-950"], [data-theme="light"] [class*="bg-blue-950"] {
   background-color: #eff6ff !important;
   color: #2563eb !important;
+  border-color: #bfdbfe !important;
 }
 
-html.light [class*="dark:bg-indigo-950"], body.light [class*="dark:bg-indigo-950"], .light [class*="dark:bg-indigo-950"], [data-theme="light"] [class*="dark:bg-indigo-950"] {
+html.light [class*="bg-indigo-950"], body.light [class*="bg-indigo-950"], .light [class*="bg-indigo-950"], [data-theme="light"] [class*="bg-indigo-950"] {
   background-color: #eef2ff !important;
   color: #4f46e5 !important;
+  border-color: #c7d2fe !important;
 }
 
-html.light [class*="dark:bg-sky-950"], body.light [class*="dark:bg-sky-950"], .light [class*="dark:bg-sky-950"], [data-theme="light"] [class*="dark:bg-sky-950"] {
+html.light [class*="bg-sky-950"], body.light [class*="bg-sky-950"], .light [class*="bg-sky-950"], [data-theme="light"] [class*="bg-sky-950"] {
   background-color: #f0f9ff !important;
   color: #0284c7 !important;
+  border-color: #bae6fd !important;
 }
 
-html.light [class*="dark:bg-amber-950"], body.light [class*="dark:bg-amber-950"], .light [class*="dark:bg-amber-950"], [data-theme="light"] [class*="dark:bg-amber-950"] {
+html.light [class*="bg-amber-950"], body.light [class*="bg-amber-950"], .light [class*="bg-amber-950"], [data-theme="light"] [class*="bg-amber-950"] {
   background-color: #fffbeb !important;
   color: #d97706 !important;
+  border-color: #fde68a !important;
 }
 
-html.light [class*="dark:bg-emerald-950"], body.light [class*="dark:bg-emerald-950"], .light [class*="dark:bg-emerald-950"], [data-theme="light"] [class*="dark:bg-emerald-950"] {
+html.light [class*="bg-emerald-950"], body.light [class*="bg-emerald-950"], .light [class*="bg-emerald-950"], [data-theme="light"] [class*="bg-emerald-950"] {
   background-color: #ecfdf5 !important;
   color: #059669 !important;
+  border-color: #a7f3d0 !important;
 }
 
-html.light [class*="dark:bg-purple-950"], body.light [class*="dark:bg-purple-950"], .light [class*="dark:bg-purple-950"], [data-theme="light"] [class*="dark:bg-purple-950"] {
+html.light [class*="bg-purple-950"], body.light [class*="bg-purple-950"], .light [class*="bg-purple-950"], [data-theme="light"] [class*="bg-purple-950"] {
   background-color: #faf5ff !important;
   color: #9333ea !important;
+  border-color: #e9d5ff !important;
 }
 
-html.light [class*="dark:bg-cyan-950"], body.light [class*="dark:bg-cyan-950"], .light [class*="dark:bg-cyan-950"], [data-theme="light"] [class*="dark:bg-cyan-950"] {
+html.light [class*="bg-cyan-950"], body.light [class*="bg-cyan-950"], .light [class*="bg-cyan-950"], [data-theme="light"] [class*="bg-cyan-950"] {
   background-color: #ecfeff !important;
   color: #0891b2 !important;
+  border-color: #a5f3fc !important;
 }
 
-html.light [class*="dark:bg-rose-950"], body.light [class*="dark:bg-rose-950"], .light [class*="dark:bg-rose-950"], [data-theme="light"] [class*="dark:bg-rose-950"] {
+html.light [class*="bg-rose-950"], body.light [class*="bg-rose-950"], .light [class*="bg-rose-950"], [data-theme="light"] [class*="bg-rose-950"] {
   background-color: #fff1f2 !important;
   color: #e11d48 !important;
+  border-color: #fecdd3 !important;
 }
 
-html.light [class*="dark:bg-teal-950"], body.light [class*="dark:bg-teal-950"], .light [class*="dark:bg-teal-950"], [data-theme="light"] [class*="dark:bg-teal-950"] {
+html.light [class*="bg-teal-950"], body.light [class*="bg-teal-950"], .light [class*="bg-teal-950"], [data-theme="light"] [class*="bg-teal-950"] {
   background-color: #f0fdfa !important;
   color: #0d9488 !important;
+  border-color: #99f6e4 !important;
 }
 
-html.light [class*="dark:bg-orange-950"], body.light [class*="dark:bg-orange-950"], .light [class*="dark:bg-orange-950"], [data-theme="light"] [class*="dark:bg-orange-950"] {
+html.light [class*="bg-orange-950"], body.light [class*="bg-orange-950"], .light [class*="bg-orange-950"], [data-theme="light"] [class*="bg-orange-950"] {
   background-color: #fff7ed !important;
   color: #ea580c !important;
+  border-color: #fed7aa !important;
 }
 
 /* Strict Light Mode Overrides for Slate Containers, Breadcrumbs & Sub-Cards */
-html.light [class*="dark:bg-slate-800"], body.light [class*="dark:bg-slate-800"], .light [class*="dark:bg-slate-800"], [data-theme="light"] [class*="dark:bg-slate-800"] {
+html.light [class*="bg-slate-800"], body.light [class*="bg-slate-800"], .light [class*="bg-slate-800"], [data-theme="light"] [class*="bg-slate-800"] {
   background-color: #f1f5f9 !important;
   border-color: #e2e8f0 !important;
   color: #475569 !important;
 }
 
-html.light [class*="dark:bg-slate-900"], body.light [class*="dark:bg-slate-900"], .light [class*="dark:bg-slate-900"], [data-theme="light"] [class*="dark:bg-slate-900"] {
+html.light [class*="bg-slate-900"], body.light [class*="bg-slate-900"], .light [class*="bg-slate-900"], [data-theme="light"] [class*="bg-slate-900"] {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
 }
 
-html.light [class*="dark:bg-slate-950"], body.light [class*="dark:bg-slate-950"], .light [class*="dark:bg-slate-950"], [data-theme="light"] [class*="dark:bg-slate-950"] {
+html.light [class*="bg-slate-950"], body.light [class*="bg-slate-950"], .light [class*="bg-slate-950"], [data-theme="light"] [class*="bg-slate-950"] {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
   color: #64748b !important;
 }
 
-html.light [class*="dark:border-slate-700"], body.light [class*="dark:border-slate-700"], .light [class*="dark:border-slate-700"], [data-theme="light"] [class*="dark:border-slate-700"] {
+/* Strict Light Mode Overrides for Dark Borders */
+html.light [class*="border-slate-700"], body.light [class*="border-slate-700"], .light [class*="border-slate-700"], [data-theme="light"] [class*="border-slate-700"],
+html.light [class*="border-slate-800"], body.light [class*="border-slate-800"], .light [class*="border-slate-800"], [data-theme="light"] [class*="border-slate-800"],
+html.light [class*="border-slate-900"], body.light [class*="border-slate-900"], .light [class*="border-slate-900"], [data-theme="light"] [class*="border-slate-900"] {
   border-color: #e2e8f0 !important;
 }
 
-html.light [class*="dark:border-slate-800"], body.light [class*="dark:border-slate-800"], .light [class*="dark:border-slate-800"], [data-theme="light"] [class*="dark:border-slate-800"] {
-  border-color: #e2e8f0 !important;
+html.light [class*="border-amber-700"], body.light [class*="border-amber-700"], .light [class*="border-amber-700"],
+html.light [class*="border-amber-800"], body.light [class*="border-amber-800"], .light [class*="border-amber-800"] {
+  border-color: #fde68a !important;
 }
 
-html.light [class*="dark:border-indigo-800"], body.light [class*="dark:border-indigo-800"], .light [class*="dark:border-indigo-800"] {
+html.light [class*="border-indigo-700"], body.light [class*="border-indigo-700"], .light [class*="border-indigo-700"],
+html.light [class*="border-indigo-800"], body.light [class*="border-indigo-800"], .light [class*="border-indigo-800"] {
   border-color: #c7d2fe !important;
 }
 
-html.light [class*="dark:border-cyan-800"], body.light [class*="dark:border-cyan-800"], .light [class*="dark:border-cyan-800"] {
+html.light [class*="border-cyan-700"], body.light [class*="border-cyan-700"], .light [class*="border-cyan-700"],
+html.light [class*="border-cyan-800"], body.light [class*="border-cyan-800"], .light [class*="border-cyan-800"] {
   border-color: #a5f3fc !important;
 }
 
-html.light [class*="dark:border-emerald-800"], body.light [class*="dark:border-emerald-800"], .light [class*="dark:border-emerald-800"] {
+html.light [class*="border-emerald-700"], body.light [class*="border-emerald-700"], .light [class*="border-emerald-700"],
+html.light [class*="border-emerald-800"], body.light [class*="border-emerald-800"], .light [class*="border-emerald-800"] {
   border-color: #a7f3d0 !important;
+}
+
+html.light [class*="border-sky-700"], body.light [class*="border-sky-700"], .light [class*="border-sky-700"],
+html.light [class*="border-sky-800"], body.light [class*="border-sky-800"], .light [class*="border-sky-800"] {
+  border-color: #bae6fd !important;
+}
+
+html.light [class*="border-rose-700"], body.light [class*="border-rose-700"], .light [class*="border-rose-700"],
+html.light [class*="border-rose-800"], body.light [class*="border-rose-800"], .light [class*="border-rose-800"] {
+  border-color: #fecdd3 !important;
+}
+
+/* Strict Light Mode Overrides for Table & Card Texts */
+html.light table [class*="text-white"],
+html.light tbody [class*="text-white"],
+body.light table [class*="text-white"],
+body.light tbody [class*="text-white"] {
+  color: #0f172a !important;
+}
+
+html.light table [class*="text-slate-200"],
+html.light tbody [class*="text-slate-200"],
+body.light table [class*="text-slate-200"],
+body.light tbody [class*="text-slate-200"],
+html.light table [class*="text-slate-300"],
+html.light tbody [class*="text-slate-300"],
+body.light table [class*="text-slate-300"],
+body.light tbody [class*="text-slate-300"] {
+  color: #1e293b !important;
+}
+
+html.light table [class*="text-slate-400"],
+html.light tbody [class*="text-slate-400"],
+body.light table [class*="text-slate-400"],
+body.light tbody [class*="text-slate-400"] {
+  color: #64748b !important;
 }
 
 /* Global Headings Theme Rules (prevents white-on-white text in light mode) */

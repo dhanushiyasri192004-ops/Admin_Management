@@ -93,7 +93,7 @@ export function DivisionalCustomers() {
         loading={loading}
         onRefresh={loadData}
         filterOptions={[
-          { label: 'All Tiers (Silver/Gold/Diamond)', value: '' },
+          { label: 'All Tiers', value: '' },
           { label: 'Diamond Card', value: 'Diamond' },
           { label: 'Gold Card', value: 'Gold' },
           { label: 'Silver Card', value: 'Silver' },

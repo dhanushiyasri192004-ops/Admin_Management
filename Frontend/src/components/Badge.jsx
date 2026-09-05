@@ -22,18 +22,18 @@ export function StatusBadge({ status, className = '' }) {
   if (!status) return null;
 
   const s = status.toLowerCase();
-  let colorStyles = 'bg-slate-800 text-slate-300 border-slate-700';
+  let colorStyles = 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
 
   if (['active', 'delivered', 'approved', 'verified', 'resolved', 'confirmed', 'available'].includes(s)) {
-    colorStyles = 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30';
+    colorStyles = 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30';
   } else if (['paid'].includes(s)) {
-    colorStyles = 'bg-indigo-950/70 text-indigo-300 border-indigo-500/30';
+    colorStyles = 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/70 dark:text-indigo-300 dark:border-indigo-500/30';
   } else if (['pending', 'processing', 'scheduled', 'busy'].includes(s)) {
-    colorStyles = 'bg-amber-950/70 text-amber-300 border-amber-500/30';
+    colorStyles = 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-500/30';
   } else if (['in progress', 'shipped', 'out for delivery', 'on duty'].includes(s)) {
-    colorStyles = 'bg-sky-950/70 text-sky-300 border-sky-500/30';
+    colorStyles = 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-500/30';
   } else if (['rejected', 'cancelled', 'inactive', 'urgent', 'high'].includes(s)) {
-    colorStyles = 'bg-rose-950/70 text-rose-300 border-rose-500/30';
+    colorStyles = 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-500/30';
   }
 
   return (

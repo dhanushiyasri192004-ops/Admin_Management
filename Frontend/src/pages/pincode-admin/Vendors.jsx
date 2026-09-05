@@ -30,14 +30,14 @@ export function PincodeVendors() {
       accessor: 'name',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-950/60 border border-amber-700/40 text-amber-400">
+          <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400">
             <Store className="w-5 h-5" />
           </div>
           <div>
-            <div className="font-bold text-white text-sm">{row.name}</div>
-            <div className="text-[11px] text-slate-400">Person: {row.contactPerson}</div>
-            <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-              <Phone className="w-3 h-3 text-slate-500" />
+            <div className="font-bold text-slate-900 dark:text-white text-sm">{row.name}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400">Person: {row.contactPerson}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+              <Phone className="w-3 h-3 text-slate-400" />
               {row.phone}
             </div>
           </div>
@@ -49,8 +49,8 @@ export function PincodeVendors() {
       accessor: 'category',
       render: (row) => (
         <div>
-          <span className="text-xs font-semibold text-indigo-300">{row.category}</span>
-          <div className="text-[11px] text-slate-400 mt-0.5">{row.address}</div>
+          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-300">{row.category}</span>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{row.address}</div>
         </div>
       )
     },
@@ -59,11 +59,11 @@ export function PincodeVendors() {
       accessor: 'rating',
       render: (row) => (
         <div>
-          <div className="flex items-center gap-1 text-amber-400 font-bold text-xs">
+          <div className="flex items-center gap-1 text-amber-500 dark:text-amber-400 font-bold text-xs">
             <Star className="w-3.5 h-3.5 fill-amber-400" />
             <span>{row.rating} / 5.0</span>
           </div>
-          <div className="text-[11px] text-slate-400">{row.totalOrdersDelivered} orders fulfilled</div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400">{row.totalOrdersDelivered} orders fulfilled</div>
         </div>
       )
     },
@@ -75,15 +75,15 @@ export function PincodeVendors() {
     {
       header: 'Pending Payout',
       accessor: 'pendingPayout',
-      render: (row) => <span className="font-bold text-slate-200">₹{row.pendingPayout?.toLocaleString()}</span>
+      render: (row) => <span className="font-bold text-slate-900 dark:text-slate-200">₹{row.pendingPayout?.toLocaleString()}</span>
     }
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-white">Pincode Vendors</h2>
-        <p className="text-xs text-slate-400">All local verified merchant shops in your assigned Pincode.</p>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pincode Vendors</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">All local verified merchant shops in your assigned Pincode.</p>
       </div>
 
       <DataTable

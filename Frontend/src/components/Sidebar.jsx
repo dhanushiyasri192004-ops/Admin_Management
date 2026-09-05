@@ -27,7 +27,9 @@ import {
   Globe2,
   Layers,
   User,
-  Truck
+  Truck,
+  ClipboardList,
+  CircleHelp
 } from 'lucide-react';
 
 export function Sidebar({ isOpen, setIsOpen }) {
@@ -50,12 +52,27 @@ export function Sidebar({ isOpen, setIsOpen }) {
         ]
       },
       {
-        title: 'State Management',
+        title: 'Districts',
         items: [
-          { name: 'State Overview', path: '/state-admin/states-overview', icon: Globe2 },
-          { name: 'Districts', path: '/state-admin/districts', icon: Building2 },
-          { name: 'Divisions', path: '/state-admin/divisions', icon: Layers },
-          { name: 'Pincodes', path: '/state-admin/pincodes', icon: MapPin },
+          { name: 'District List', path: '/state-admin/districts', icon: Building2 },
+          { name: 'District Admins', path: '/state-admin/district-admins', icon: ShieldAlert },
+          { name: 'District Details', path: '/state-admin/district-details', icon: Building2 },
+        ]
+      },
+      {
+        title: 'Divisions',
+        items: [
+          { name: 'Division List', path: '/state-admin/divisions', icon: Layers },
+          { name: 'Division Admins', path: '/state-admin/division-admins', icon: ShieldAlert },
+          { name: 'Division Details', path: '/state-admin/division-details', icon: Building2 },
+        ]
+      },
+      {
+        title: 'Pincodes',
+        items: [
+          { name: 'Pincode List', path: '/state-admin/pincodes', icon: MapPin },
+          { name: 'Pincode Admins', path: '/state-admin/pincode-admins', icon: ShieldCheck },
+          { name: 'Pincode Details', path: '/state-admin/pincode-details', icon: Building2 },
         ]
       },
       {
@@ -83,6 +100,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'Executives', path: '/state-admin/executives', icon: UserCheck },
           { name: 'Support Team', path: '/state-admin/support-team', icon: Headphones },
           { name: 'Agents', path: '/state-admin/agents', icon: UserPlus },
+          { name: 'Agent Payments', path: '/state-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {
@@ -91,6 +109,8 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'KYC', path: '/state-admin/kyc', icon: FileCheck2 },
           { name: 'Payments', path: '/state-admin/payments', icon: IndianRupee },
           { name: 'Business Reports', path: '/state-admin/reports', icon: BarChart3 },
+          { name: 'Tasks', path: '/state-admin/tasks', icon: ClipboardList },
+          { name: 'Queries', path: '/state-admin/queries', icon: CircleHelp },
         ]
       },
       {

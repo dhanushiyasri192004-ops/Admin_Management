@@ -30,13 +30,13 @@ export function StateVendors() {
       accessor: 'name',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-950/60 border border-amber-700/40 text-amber-400">
+          <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400">
             <Store className="w-5 h-5" />
           </div>
           <div>
-            <div className="font-bold text-white text-sm">{row.name}</div>
-            <div className="text-[11px] text-slate-400">Contact: {row.contactPerson} • {row.phone}</div>
-            <div className="text-[10px] text-indigo-400 font-medium mt-0.5">{row.category}</div>
+            <div className="font-bold text-slate-900 dark:text-white text-sm">{row.name}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400">Contact: {row.contactPerson} • {row.phone}</div>
+            <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">{row.category}</div>
           </div>
         </div>
       )
@@ -46,8 +46,8 @@ export function StateVendors() {
       accessor: 'pincode',
       render: (row) => (
         <div>
-          <div className="text-xs font-semibold text-slate-200">{row.district}, {row.division}</div>
-          <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1 mt-0.5">
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">{row.district}, {row.division}</div>
+          <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
             <MapPin className="w-3 h-3" /> PIN: {row.pincode}
           </div>
         </div>
@@ -58,11 +58,11 @@ export function StateVendors() {
       accessor: 'rating',
       render: (row) => (
         <div>
-          <div className="flex items-center gap-1 text-amber-400 font-bold text-xs">
+          <div className="flex items-center gap-1 text-amber-500 dark:text-amber-400 font-bold text-xs">
             <Star className="w-3.5 h-3.5 fill-amber-400" />
             <span>{row.rating} / 5.0</span>
           </div>
-          <div className="text-[11px] text-slate-400">{row.totalOrdersDelivered} orders fulfilled</div>
+          <div className="text-[11px] text-slate-500 dark:text-slate-400">{row.totalOrdersDelivered} orders fulfilled</div>
         </div>
       )
     },
@@ -75,7 +75,7 @@ export function StateVendors() {
       header: 'Pending Payout',
       accessor: 'pendingPayout',
       render: (row) => (
-        <span className="font-bold text-slate-200">₹{row.pendingPayout?.toLocaleString()}</span>
+        <span className="font-bold text-slate-900 dark:text-slate-200">₹{row.pendingPayout?.toLocaleString()}</span>
       )
     }
   ];
@@ -83,8 +83,8 @@ export function StateVendors() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-white">State Vendors Network</h2>
-        <p className="text-xs text-slate-400">Overview of certified merchant partners under state jurisdiction.</p>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">State Vendors Network</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Overview of certified merchant partners under state jurisdiction.</p>
       </div>
 
       <DataTable

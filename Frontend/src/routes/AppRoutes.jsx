@@ -13,8 +13,14 @@ import { Login } from '../pages/auth/Login';
 import { StateAdminDashboard } from '../pages/state-admin/Dashboard';
 import { StatesOverview } from '../pages/state-admin/StatesOverview';
 import { StateDistricts } from '../pages/state-admin/Districts';
+import { StateDistrictAdmins } from '../pages/state-admin/DistrictAdmins';
+import { StateDistrictDetails } from '../pages/state-admin/DistrictDetails';
 import { StateDivisions } from '../pages/state-admin/Divisions';
+import { StateDivisionAdmins } from '../pages/state-admin/DivisionAdmins';
+import { StateDivisionDetails } from '../pages/state-admin/DivisionDetails';
 import { StatePincodes } from '../pages/state-admin/Pincodes';
+import { StatePincodeAdmins } from '../pages/state-admin/PincodeAdmins';
+import { StatePincodeDetails } from '../pages/state-admin/PincodeDetails';
 import { StateCustomers } from '../pages/state-admin/Customers';
 import { StateMembershipCards } from '../pages/state-admin/MembershipCards';
 import { StateVendors } from '../pages/state-admin/Vendors';
@@ -26,12 +32,15 @@ import { StateDeliveryPartners } from '../pages/state-admin/DeliveryPartners';
 import { StateTechnicians } from '../pages/state-admin/Technicians';
 import { StateExecutives } from '../pages/state-admin/Executives';
 import { StateAgents } from '../pages/state-admin/Agents';
+import { StateAgentPayments } from '../pages/state-admin/AgentPayments';
 import { StatePayments } from '../pages/state-admin/Payments';
 import { StateReports } from '../pages/state-admin/Reports';
 import { StateKYC } from '../pages/state-admin/KYC';
 import { StateSupportTeam } from '../pages/state-admin/SupportTeam';
 import { StateProfile } from '../pages/state-admin/Profile';
 import { StateSettings } from '../pages/state-admin/Settings';
+import { StateTasks } from '../pages/state-admin/Tasks';
+import { StateQueries } from '../pages/state-admin/Queries';
 
 // District Admin Pages
 import { DistrictAdminDashboard } from '../pages/district-admin/Dashboard';
@@ -130,8 +139,14 @@ export function AppRoutes() {
             <Route path="/state-admin/dashboard" element={<StateAdminDashboard />} />
             <Route path="/state-admin/states-overview" element={<StatesOverview />} />
             <Route path="/state-admin/districts" element={<StateDistricts />} />
+            <Route path="/state-admin/district-admins" element={<StateDistrictAdmins />} />
+            <Route path="/state-admin/district-details" element={<StateDistrictDetails />} />
             <Route path="/state-admin/divisions" element={<StateDivisions />} />
+            <Route path="/state-admin/division-admins" element={<StateDivisionAdmins />} />
+            <Route path="/state-admin/division-details" element={<StateDivisionDetails />} />
             <Route path="/state-admin/pincodes" element={<StatePincodes />} />
+            <Route path="/state-admin/pincode-admins" element={<StatePincodeAdmins />} />
+            <Route path="/state-admin/pincode-details" element={<StatePincodeDetails />} />
             <Route path="/state-admin/customers" element={<StateCustomers />} />
             <Route path="/state-admin/membership-cards" element={<StateMembershipCards />} />
             <Route path="/state-admin/vendors" element={<StateVendors />} />
@@ -144,9 +159,12 @@ export function AppRoutes() {
             <Route path="/state-admin/executives" element={<StateExecutives />} />
             <Route path="/state-admin/support-team" element={<StateSupportTeam />} />
             <Route path="/state-admin/agents" element={<StateAgents />} />
+            <Route path="/state-admin/agent-payments" element={<StateAgentPayments />} />
             <Route path="/state-admin/kyc" element={<StateKYC />} />
             <Route path="/state-admin/payments" element={<StatePayments />} />
             <Route path="/state-admin/reports" element={<StateReports />} />
+            <Route path="/state-admin/tasks" element={<StateTasks />} />
+            <Route path="/state-admin/queries" element={<StateQueries />} />
             <Route path="/state-admin/profile" element={<StateProfile />} />
             <Route path="/state-admin/settings" element={<StateSettings />} />
           </Route>
