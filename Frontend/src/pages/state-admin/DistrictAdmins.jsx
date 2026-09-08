@@ -1,52 +1,100 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { DataTable } from '../../components/DataTable';
+import { Modal } from '../../components/Modal';
 import { useTheme } from '../../context/ThemeContext';
-import { ShieldAlert, Mail, Phone, Building2, MapPin } from 'lucide-react';
+import { 
+  Building2, 
+  Mail, 
+  Phone, 
+  Eye, 
+  GraduationCap, 
+  Briefcase, 
+  MapPin, 
+  Calendar, 
+  Award, 
+  Layers, 
+  ShieldCheck, 
+  Hash,
+  Clock
+} from 'lucide-react';
 
 export function StateDistrictAdmins() {
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
 
-  const [admins, setAdmins] = useState([
+  const [admins] = useState([
     {
       id: 'ADM-DST-01',
+      employeeCode: 'EMP-TN-DST-004',
       name: 'Rajesh Sharma',
       email: 'district_admin@admin.com',
       phone: '+91 98765 43211',
+      emergencyPhone: '+91 98765 43299',
       district: 'Salem',
       code: 'SLM',
+      state: 'Tamil Nadu',
       divisionsCount: 2,
       pincodesCount: 4,
       status: 'Active',
-      joinedDate: '10 Jan 2026'
+      joinedDate: '10 Jan 2026',
+      qualification: 'Master of Public Administration (MPA), B.Tech (IT)',
+      experience: '8+ years in Territorial Public Governance & Ops',
+      specialization: 'District Logistics & Municipal Governance',
+      address: 'Collectorate Administrative Complex, 42 Meyyanur Main Road, Salem - 636004, Tamil Nadu'
     },
     {
       id: 'ADM-DST-02',
+      employeeCode: 'EMP-TN-DST-008',
       name: 'Sundar Raman',
       email: 'cbe_admin@admin.com',
       phone: '+91 98402 11223',
+      emergencyPhone: '+91 98402 11299',
       district: 'Coimbatore',
       code: 'CBE',
+      state: 'Tamil Nadu',
       divisionsCount: 2,
       pincodesCount: 4,
       status: 'Active',
-      joinedDate: '12 Jan 2026'
+      joinedDate: '12 Jan 2026',
+      qualification: 'MBA in Operations & Logistics, B.E. (Computer Science)',
+      experience: '10+ years in Zonal Logistics & District Administration',
+      specialization: 'Smart City Infrastructure & Last-Mile Field Ops',
+      address: 'District Collectorate Office, 15 Avinashi Road, Peelamedu, Coimbatore - 641004, Tamil Nadu'
     }
   ]);
 
   const columns = [
     {
-      header: 'District Administrator',
+      header: 'Name',
       accessor: 'name',
       render: (row) => (
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-            <ShieldAlert className="w-4 h-4" />
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+            isDark ? 'bg-indigo-950/80 text-cyan-300 border border-indigo-800/60' : 'bg-blue-100 text-blue-700 border border-blue-200'
+          }`}>
+            {row.name[0]}
           </div>
           <div>
-            <div className="font-bold text-slate-900 dark:text-white text-xs">{row.name}</div>
-            <div className="text-[11px] text-slate-500 font-mono">{row.email}</div>
+            <div className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>{row.name}</div>
+            <div className={`text-[10px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{row.employeeCode || row.id}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Email / Mobile Number',
+      accessor: 'email',
+      render: (row) => (
+        <div className="space-y-0.5">
+          <div className={`text-xs font-medium flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+            <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+            <span className="font-mono text-[11px]">{row.email}</span>
+          </div>
+          <div className={`text-xs flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+            <span className="font-mono text-[11px]">{row.phone}</span>
           </div>
         </div>
       )
@@ -56,39 +104,40 @@ export function StateDistrictAdmins() {
       accessor: 'district',
       render: (row) => (
         <div>
-          <span className="font-bold text-blue-600 dark:text-cyan-300 text-xs flex items-center gap-1">
+          <span className={`font-bold text-xs flex items-center gap-1.5 ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>
             <Building2 className="w-3.5 h-3.5 text-slate-400" />
             {row.district}
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Code: {row.code}</span>
+          <span className={`text-[10px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Code: {row.code}</span>
         </div>
-      )
-    },
-    {
-      header: 'Coverage Scope',
-      accessor: 'divisionsCount',
-      render: (row) => (
-        <div className="text-xs text-slate-700 dark:text-slate-300">
-          <span className="font-semibold">{row.divisionsCount} Divisions</span> • {row.pincodesCount} Pincodes
-        </div>
-      )
-    },
-    {
-      header: 'Contact',
-      accessor: 'phone',
-      render: (row) => (
-        <span className="text-xs text-slate-600 dark:text-slate-400 font-mono flex items-center gap-1">
-          <Phone className="w-3 h-3 text-slate-400" /> {row.phone}
-        </span>
       )
     },
     {
       header: 'Status',
       accessor: 'status',
       render: (row) => (
-        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-900/50">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-900/50">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           {row.status}
         </span>
+      )
+    },
+    {
+      header: 'View',
+      accessor: 'actions',
+      render: (row) => (
+        <button
+          type="button"
+          onClick={() => setSelectedAdmin(row)}
+          className={`inline-flex items-center justify-center p-2 rounded-lg border transition shadow-2xs cursor-pointer ${
+            isDark
+              ? 'bg-slate-800 border-slate-700 text-cyan-300 hover:bg-slate-700 hover:text-white'
+              : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 hover:text-blue-800'
+          }`}
+          title="View District Admin Profile"
+        >
+          <Eye className="w-4 h-4" />
+        </button>
       )
     }
   ];
@@ -96,21 +145,171 @@ export function StateDistrictAdmins() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">State District Administrators</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>State District Administrators</h2>
+        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           Supervisory personnel and nodal officers assigned to executive district jurisdictions across {user?.state || 'Tamil Nadu'}.
         </p>
       </div>
 
       <DataTable
         title="District Admins Directory"
-        subtitle="Roster of district administrators and credential status"
+        subtitle="Roster of district administrators, contact channels and credential status"
         columns={columns}
         data={admins}
         loading={false}
-        searchPlaceholder="Search admin by name or district..."
+        searchPlaceholder="Search admin by name, district, or email..."
         exportFileName="state_district_admins.csv"
       />
+
+      {/* District Admin Details Modal */}
+      <Modal
+        isOpen={!!selectedAdmin}
+        onClose={() => setSelectedAdmin(null)}
+        title="District Administrator Profile"
+        maxWidth="max-w-2xl"
+      >
+        {selectedAdmin && (
+          <div className="space-y-5">
+            {/* Top Profile Header */}
+            <div className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${
+              isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200/80'
+            }`}>
+              <div className="flex items-center gap-3.5">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
+                  isDark ? 'bg-indigo-950 border border-indigo-700/60 text-cyan-300' : 'bg-blue-600 text-white shadow-sm'
+                }`}>
+                  {selectedAdmin.name[0]}
+                </div>
+                <div>
+                  <h4 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    {selectedAdmin.name}
+                  </h4>
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span>District Administrator</span>
+                    <span>•</span>
+                    <span className="font-mono">{selectedAdmin.employeeCode}</span>
+                  </div>
+                </div>
+              </div>
+
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-900/50">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                {selectedAdmin.status}
+              </span>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Contact Card */}
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <Phone className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Contact Information</span>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Official Email:</span>
+                    <div className={`font-mono font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.email}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Mobile Number:</span>
+                    <div className={`font-mono font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.phone}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Emergency Contact:</span>
+                    <div className={`font-mono font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.emergencyPhone || 'N/A'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Jurisdiction Card */}
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <Building2 className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Jurisdiction & Scope</span>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Assigned District:</span>
+                    <div className={`font-bold ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>
+                      {selectedAdmin.district} (Code: {selectedAdmin.code})
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Supervisory Scope:</span>
+                    <div className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>
+                      {selectedAdmin.divisionsCount} Divisions • {selectedAdmin.pincodesCount} Pincodes
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Date of Appointment:</span>
+                    <div className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.joinedDate}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Qualifications & Experience Card */}
+              <div className={`p-4 rounded-xl border space-y-3 md:col-span-2 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <GraduationCap className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Qualification & Professional Credentials</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Academic Qualification:</span>
+                    <div className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.qualification}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Relevant Experience:</span>
+                    <div className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.experience}</div>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="text-slate-500 dark:text-slate-400">Functional Domain:</span>
+                    <div className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{selectedAdmin.specialization}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Official Administrative Address */}
+              <div className={`p-4 rounded-xl border space-y-2 md:col-span-2 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Official Headquarters Address</span>
+                </div>
+                <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {selectedAdmin.address}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setSelectedAdmin(null)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                    : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                Close Profile
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

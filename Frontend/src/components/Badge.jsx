@@ -2,7 +2,13 @@ import React from 'react';
 import { TIER_CONFIG } from '../utils/constants';
 
 export function TierBadge({ tier, className = '' }) {
-  if (!tier) return null;
+  if (!tier || tier.toLowerCase() === 'customer' || tier.toLowerCase() === 'customers') {
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 ${className}`}>
+        Customer
+      </span>
+    );
+  }
 
   const config = TIER_CONFIG[tier] || TIER_CONFIG.Silver;
 

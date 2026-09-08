@@ -71,9 +71,57 @@ function getDistricts(req, res) {
     if (req.user.role === 'District Admin' || req.user.role === 'Divisional Admin' || req.user.role === 'Pincode Admin') {
       districts = districts.filter(d => d.name === req.user.district);
     }
-    return res.json({ success: true, districts });
+
+    const adminMapping = {
+      'Salem': { name: 'Ananya Iyer', email: 'district_admin@admin.com' },
+      'Coimbatore': { name: 'Sundar Raman', email: 'cbe_admin@admin.com' },
+      'Pune': { name: 'Nitin Deshmukh', email: 'pune_admin@admin.com' }
+    };
+
+    const enrichedDistricts = districts.map(d => {
+      const assigned = db.admins.find(a => a.district === d.name && (a.role === 'District Admin' || a.role.includes('District')));
+      const fallback = adminMapping[d.name] || { name: `${d.name} Admin`, email: `${d.name.toLowerCase()}_admin@admin.com` };
+
+      const adminName = assigned ? assigned.name.replace(/\s*\(.*?\)\s*/g, '').trim() : fallback.name;
+      const adminEmail = assigned ? assigned.email : fallback.email;
+      const status = d.status || 'Active';
+
+      return {
+        ...d,
+        adminName,
+        adminEmail,
+        status
+      };
+    });
+
+    return res.json({ success: true, districts: enrichedDistricts });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch districts', error: error.message });
+  }
+}
+
+function updateDistrictStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    let updated = null;
+
+    db.hierarchy.states.forEach(s => {
+      s.districts.forEach(d => {
+        if (d.id === id || d.name === id || d.code === id) {
+          d.status = status;
+          updated = d;
+        }
+      });
+    });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'District not found' });
+    }
+
+    return res.json({ success: true, message: `District status updated to ${status}`, district: updated });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update district status', error: error.message });
   }
 }
 
@@ -107,5 +155,6 @@ module.exports = {
   getHierarchy,
   getSubordinateAdmins,
   getDistricts,
+  updateDistrictStatus,
   getDivisions
 };

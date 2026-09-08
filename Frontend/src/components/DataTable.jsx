@@ -16,6 +16,7 @@ export function DataTable({
   title = '',
   subtitle = '',
   actions = null,
+  customHeader = null,
   exportFileName = 'export.csv',
   itemsPerPage = 8
 }) {
@@ -75,84 +76,102 @@ export function DataTable({
         : 'bg-white border-slate-200/90 text-slate-800 shadow-sm'
     } border rounded-2xl transition-colors`}>
       {/* Header Bar */}
-      <div className={`p-4 sm:p-5 border-b ${
-        isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50/50'
-      } flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 transition-colors`}>
-        <div className="min-w-0">
-          {title && (
-            <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {title}
-            </h3>
-          )}
-          {subtitle && (
-            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-              {subtitle}
-            </p>
-          )}
-        </div>
-
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
-          <SearchBar
-            value={search}
-            onChange={(val) => {
+      {customHeader ? (
+        typeof customHeader === 'function' ? (
+          customHeader({
+            search,
+            setSearch: (val) => {
               setSearch(val);
               setCurrentPage(1);
-            }}
-            placeholder={searchPlaceholder}
-            className="w-full sm:w-44 md:w-52 shrink"
-          />
+            },
+            onRefresh,
+            loading,
+            handleExportCSV,
+            isDark
+          })
+        ) : (
+          customHeader
+        )
+      ) : (
+        <div className={`p-4 sm:p-5 border-b ${
+          isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50/50'
+        } flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 transition-colors`}>
+          <div className="min-w-0">
+            {title && (
+              <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {title}
+              </h3>
+            )}
+            {subtitle && (
+              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
+                {subtitle}
+              </p>
+            )}
+          </div>
 
-          {filterOptions && onFilterChange && (
-            <div className={`h-9 inline-flex items-center gap-2 ${
-              isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-            } border rounded-xl px-2.5 text-xs transition-colors shrink-0`}>
-              <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <select
-                value={activeFilter}
-                onChange={(e) => onFilterChange(e.target.value)}
-                className={`bg-transparent border-none ${isDark ? 'text-slate-200' : 'text-slate-800'} text-xs focus:outline-none cursor-pointer pr-1 max-w-[170px] truncate`}
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+            <SearchBar
+              value={search}
+              onChange={(val) => {
+                setSearch(val);
+                setCurrentPage(1);
+              }}
+              placeholder={searchPlaceholder}
+              className="w-full sm:w-44 md:w-52 shrink"
+            />
+
+            {filterOptions && onFilterChange && (
+              <div className={`h-9 inline-flex items-center gap-2 ${
+                isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+              } border rounded-xl px-2.5 text-xs transition-colors shrink-0`}>
+                <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <select
+                  value={activeFilter}
+                  onChange={(e) => onFilterChange(e.target.value)}
+                  className={`bg-transparent border-none ${isDark ? 'text-slate-200' : 'text-slate-800'} text-xs focus:outline-none cursor-pointer pr-1 max-w-[170px] truncate`}
+                >
+                  {filterOptions.map(opt => (
+                    <option key={opt.value} value={opt.value} className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {onRefresh && (
+              <button
+                type="button"
+                onClick={onRefresh}
+                title="Refresh Data"
+                className={`h-9 w-9 inline-flex items-center justify-center shrink-0 ${
+                  isDark
+                    ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                    : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+                } border rounded-xl transition cursor-pointer`}
               >
-                {filterOptions.map(opt => (
-                  <option key={opt.value} value={opt.value} className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            )}
 
-          {onRefresh && (
             <button
               type="button"
-              onClick={onRefresh}
-              title="Refresh Data"
-              className={`h-9 w-9 inline-flex items-center justify-center shrink-0 ${
+              onClick={handleExportCSV}
+              title="Export to CSV"
+              className={`h-9 inline-flex items-center gap-1.5 px-3 shrink-0 ${
                 isDark
                   ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
                   : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
-              } border rounded-xl transition cursor-pointer`}
+              } border rounded-xl text-xs font-semibold transition cursor-pointer`}
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <Download className="w-3.5 h-3.5 shrink-0" />
+              <span className="whitespace-nowrap">Export CSV</span>
             </button>
-          )}
 
-          <button
-            type="button"
-            onClick={handleExportCSV}
-            title="Export to CSV"
-            className={`h-9 inline-flex items-center gap-1.5 px-3 shrink-0 ${
-              isDark
-                ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
-                : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
-            } border rounded-xl text-xs font-semibold transition cursor-pointer`}
-          >
-            <Download className="w-3.5 h-3.5 shrink-0" />
-            <span className="whitespace-nowrap">Export CSV</span>
-          </button>
-
-          {actions && <div className="shrink-0 flex items-center gap-2">{actions}</div>}
+            {actions && <div className="shrink-0 flex items-center gap-2">{actions}</div>}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Table Body */}
       <div className="overflow-x-auto">
@@ -162,7 +181,7 @@ export function DataTable({
           } uppercase tracking-wider text-[11px] border-b transition-colors`}>
             <tr>
               {columns.map((col, idx) => (
-                <th key={idx} className={`px-5 py-3.5 font-semibold ${col.className || ''}`}>
+                <th key={idx} className={`px-4 py-3 font-semibold ${col.className || ''}`}>
                   {col.header}
                 </th>
               ))}
@@ -173,7 +192,7 @@ export function DataTable({
               Array.from({ length: 4 }).map((_, rIdx) => (
                 <tr key={rIdx} className="animate-pulse">
                   {columns.map((_, cIdx) => (
-                    <td key={cIdx} className="px-5 py-4">
+                    <td key={cIdx} className="px-4 py-3">
                       <div className={`h-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'} rounded w-3/4`}></div>
                     </td>
                   ))}
@@ -181,7 +200,7 @@ export function DataTable({
               ))
             ) : paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-5 py-12 text-center text-slate-400">
+                <td colSpan={columns.length} className="px-4 py-10 text-center text-slate-400">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <p className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>No records found</p>
                     <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Try adjusting your search or filters.</p>
@@ -192,7 +211,7 @@ export function DataTable({
               paginatedData.map((row, rowIdx) => (
                 <tr key={row.id || rowIdx} className={`${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'} transition-colors`}>
                   {columns.map((col, colIdx) => (
-                    <td key={colIdx} className={`px-5 py-3.5 ${col.className || ''}`}>
+                    <td key={colIdx} className={`px-4 py-3 ${col.className || ''}`}>
                       {col.render ? col.render(row) : (
                         typeof col.accessor === 'function' ? col.accessor(row) : row[col.accessor]
                       )}

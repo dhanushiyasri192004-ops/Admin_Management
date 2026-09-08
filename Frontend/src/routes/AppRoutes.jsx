@@ -32,6 +32,7 @@ import { StateDeliveryPartners } from '../pages/state-admin/DeliveryPartners';
 import { StateTechnicians } from '../pages/state-admin/Technicians';
 import { StateExecutives } from '../pages/state-admin/Executives';
 import { StateAgents } from '../pages/state-admin/Agents';
+import { StateManagers } from '../pages/state-admin/Managers';
 import { StateAgentPayments } from '../pages/state-admin/AgentPayments';
 import { StatePayments } from '../pages/state-admin/Payments';
 import { StateReports } from '../pages/state-admin/Reports';
@@ -157,6 +158,11 @@ export function AppRoutes() {
             <Route path="/state-admin/delivery-partners" element={<StateDeliveryPartners />} />
             <Route path="/state-admin/technicians" element={<StateTechnicians />} />
             <Route path="/state-admin/executives" element={<StateExecutives />} />
+            <Route path="/state-admin/managers" element={<StateManagers level="state" />} />
+            <Route path="/state-admin/managers/state" element={<StateManagers level="state" />} />
+            <Route path="/state-admin/managers/district" element={<StateManagers level="district" />} />
+            <Route path="/state-admin/managers/divisional" element={<StateManagers level="divisional" />} />
+            <Route path="/state-admin/managers/pincode" element={<StateManagers level="pincode" />} />
             <Route path="/state-admin/agents" element={<StateAgents level="state" />} />
             <Route path="/state-admin/agents/state" element={<StateAgents level="state" />} />
             <Route path="/state-admin/agents/district" element={<StateAgents level="district" />} />

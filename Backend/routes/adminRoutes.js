@@ -10,6 +10,7 @@ router.use(locationMiddleware);
 router.get('/hierarchy', adminController.getHierarchy);
 router.get('/subordinates', adminController.getSubordinateAdmins);
 router.get('/districts', adminController.getDistricts);
+router.patch('/districts/:id/status', adminController.updateDistrictStatus);
 router.get('/divisions', adminController.getDivisions);
 
 module.exports = router;

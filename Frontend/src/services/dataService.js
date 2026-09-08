@@ -9,6 +9,10 @@ export const dataService = {
   getHierarchy: () => apiRequest('/admin/hierarchy'),
   getSubordinateAdmins: () => apiRequest('/admin/subordinates'),
   getDistricts: () => apiRequest('/admin/districts'),
+  updateDistrictStatus: (id, status) => apiRequest(`/admin/districts/${encodeURIComponent(id)}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status })
+  }),
   getDivisions: () => apiRequest('/admin/divisions'),
 
   // Customers & Membership

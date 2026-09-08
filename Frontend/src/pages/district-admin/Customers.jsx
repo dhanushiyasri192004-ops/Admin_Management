@@ -42,15 +42,8 @@ export function DistrictCustomers() {
     },
     {
       header: 'Membership Tier',
-      accessor: (row) => row.membership?.tier,
-      render: (row) => (
-        <div>
-          <TierBadge tier={row.membership?.tier} />
-          <div className="text-[10px] text-slate-400 font-mono mt-1">
-            {row.membership?.cardNumber}
-          </div>
-        </div>
-      )
+      accessor: (row) => row.membership?.tier || 'Customers',
+      render: (row) => <TierBadge tier={row.membership?.tier || 'Customers'} />
     },
     {
       header: 'Division & Pincode',

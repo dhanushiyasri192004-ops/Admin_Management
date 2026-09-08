@@ -16,6 +16,7 @@ import {
   UserCheck,
   Headphones,
   UserPlus,
+  UserCog,
   IndianRupee,
   FileCheck2,
   BarChart3,
@@ -76,6 +77,25 @@ export function Sidebar({ isOpen, setIsOpen }) {
         ]
       },
       {
+        title: 'Managers',
+        items: [
+          { name: 'State Managers', path: '/state-admin/managers/state', icon: UserCog },
+          { name: 'District Managers', path: '/state-admin/managers/district', icon: Building2 },
+          { name: 'Divisional Managers', path: '/state-admin/managers/divisional', icon: Layers },
+          { name: 'Pincode Managers', path: '/state-admin/managers/pincode', icon: MapPin },
+        ]
+      },
+      {
+        title: 'Agents',
+        items: [
+          { name: 'State Agent', path: '/state-admin/agents/state', icon: UserPlus },
+          { name: 'District Agent', path: '/state-admin/agents/district', icon: Building2 },
+          { name: 'Divisional Agent', path: '/state-admin/agents/divisional', icon: Layers },
+          { name: 'Pincode Agent', path: '/state-admin/agents/pincode', icon: MapPin },
+          { name: 'Agents Payment', path: '/state-admin/agent-payments', icon: IndianRupee },
+        ]
+      },
+      {
         title: 'Customers & Membership',
         items: [
           { name: 'Customers', path: '/state-admin/customers', icon: Users },
@@ -99,16 +119,6 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'Technicians', path: '/state-admin/technicians', icon: Wrench },
           { name: 'Executives', path: '/state-admin/executives', icon: UserCheck },
           { name: 'Support Team', path: '/state-admin/support-team', icon: Headphones },
-        ]
-      },
-      {
-        title: 'Agents',
-        items: [
-          { name: 'State Agent', path: '/state-admin/agents/state', icon: UserPlus },
-          { name: 'District Agent', path: '/state-admin/agents/district', icon: Building2 },
-          { name: 'Divisional Agent', path: '/state-admin/agents/divisional', icon: Layers },
-          { name: 'Pincode Agent', path: '/state-admin/agents/pincode', icon: MapPin },
-          { name: 'Agents Payment', path: '/state-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {
@@ -154,6 +164,13 @@ export function Sidebar({ isOpen, setIsOpen }) {
         ]
       },
       {
+        title: 'Agents',
+        items: [
+          { name: 'Agents', path: '/district-admin/agents', icon: UserPlus },
+          { name: 'Agent Payments', path: '/district-admin/agent-payments', icon: IndianRupee },
+        ]
+      },
+      {
         title: 'Customers & Loyalty',
         items: [
           { name: 'Customers', path: '/district-admin/customers', icon: Users },
@@ -177,8 +194,6 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'Technicians', path: '/district-admin/technicians', icon: Wrench },
           { name: 'Executives', path: '/district-admin/executives', icon: UserCheck },
           { name: 'Support Team', path: '/district-admin/support-team', icon: Headphones },
-          { name: 'Agents', path: '/district-admin/agents', icon: UserPlus },
-          { name: 'Agent Payments', path: '/district-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {
@@ -215,6 +230,13 @@ export function Sidebar({ isOpen, setIsOpen }) {
         ]
       },
       {
+        title: 'Agents',
+        items: [
+          { name: 'Agents', path: '/divisional-admin/agents', icon: UserPlus },
+          { name: 'Agent Payments', path: '/divisional-admin/agent-payments', icon: IndianRupee },
+        ]
+      },
+      {
         title: 'Customers & Loyalty',
         items: [
           { name: 'Customers', path: '/divisional-admin/customers', icon: Users },
@@ -238,8 +260,6 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'Technicians', path: '/divisional-admin/technicians', icon: Wrench },
           { name: 'Executives', path: '/divisional-admin/executives', icon: UserCheck },
           { name: 'Support Team', path: '/divisional-admin/support-team', icon: Headphones },
-          { name: 'Agents', path: '/divisional-admin/agents', icon: UserPlus },
-          { name: 'Agent Payments', path: '/divisional-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {

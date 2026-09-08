@@ -16,7 +16,11 @@ function getCustomers(req, res) {
       );
     }
     if (tier) {
-      scoped = scoped.filter(c => c.membership && c.membership.tier.toLowerCase() === tier.toLowerCase());
+      if (tier.toLowerCase() === 'customers' || tier.toLowerCase() === 'none' || tier.toLowerCase() === 'no card') {
+        scoped = scoped.filter(c => !c.membership || !c.membership.tier);
+      } else {
+        scoped = scoped.filter(c => c.membership && c.membership.tier.toLowerCase() === tier.toLowerCase());
+      }
     }
     if (status) {
       scoped = scoped.filter(c => c.status.toLowerCase() === status.toLowerCase());
@@ -34,16 +38,18 @@ function getCustomers(req, res) {
 function getMembershipCards(req, res) {
   try {
     const scopedCustomers = filterByLocation(db.customers, req.user);
-    const cards = scopedCustomers.map(c => ({
-      customerId: c.id,
-      customerName: c.name,
-      customerPhone: c.phone,
-      state: c.state,
-      district: c.district,
-      division: c.division,
-      pincode: c.pincode,
-      ...c.membership
-    }));
+    const cards = scopedCustomers
+      .filter(c => c.membership && c.membership.cardNumber)
+      .map(c => ({
+        customerId: c.id,
+        customerName: c.name,
+        customerPhone: c.phone,
+        state: c.state,
+        district: c.district,
+        division: c.division,
+        pincode: c.pincode,
+        ...c.membership
+      }));
 
     // Tier counts
     const counts = {
