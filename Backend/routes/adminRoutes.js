@@ -12,5 +12,6 @@ router.get('/subordinates', adminController.getSubordinateAdmins);
 router.get('/districts', adminController.getDistricts);
 router.patch('/districts/:id/status', adminController.updateDistrictStatus);
 router.get('/divisions', adminController.getDivisions);
+router.patch('/divisions/:id/status', adminController.updateDivisionStatus);
 
 module.exports = router;

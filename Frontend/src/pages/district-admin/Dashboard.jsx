@@ -75,40 +75,6 @@ export function DistrictAdminDashboard() {
 
   return (
     <div className="space-y-6 pb-8">
-      {/* Scope Banner */}
-      <div className="admin-card p-5 bg-white dark:bg-[#131f37] border border-slate-200/90 dark:border-[#1f3358] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              {user?.district || 'Salem'} District Command Hub
-            </h2>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-              isDark
-                ? 'bg-indigo-950/80 text-indigo-300 border-indigo-800'
-                : 'bg-blue-50 text-blue-700 border-blue-200'
-            }`}>
-              District Jurisdiction
-            </span>
-          </div>
-          <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-            Strictly scoped to {user?.district || 'Salem'} District, {user?.state || 'Tamil Nadu'}. Data outside this district is completely isolated.
-          </p>
-        </div>
-
-        {/* Drill down Breadcrumb */}
-        <div className={`flex items-center gap-2 text-xs border rounded-xl px-3 py-1.5 font-mono ${
-          isDark
-            ? 'bg-slate-800/80 border-slate-700 text-slate-400'
-            : 'bg-slate-100 border-slate-200 text-slate-600'
-        }`}>
-          <span className="text-blue-600 font-bold">District</span>
-          <span>&rarr;</span>
-          <span>Divisions</span>
-          <span>&rarr;</span>
-          <span>Pincodes</span>
-        </div>
-      </div>
-
       {/* Top 10 KPI Cards Grid (Exact 10 Requested by User) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
         {/* 1. Total Divisions */}

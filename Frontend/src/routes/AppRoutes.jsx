@@ -51,6 +51,7 @@ import { DistrictDivisionAdmins } from '../pages/district-admin/DivisionAdmins';
 import { DistrictDivisionDetails } from '../pages/district-admin/DivisionDetails';
 import { DistrictPincodes } from '../pages/district-admin/Pincodes';
 import { DistrictPincodeAdmins } from '../pages/district-admin/PincodeAdmins';
+import { DistrictPincodeDetails } from '../pages/district-admin/PincodeDetails';
 import { DistrictCustomers } from '../pages/district-admin/Customers';
 import { DistrictMembershipCards } from '../pages/district-admin/MembershipCards';
 import { DistrictVendors } from '../pages/district-admin/Vendors';
@@ -67,6 +68,8 @@ import { DistrictAgentPayments } from '../pages/district-admin/AgentPayments';
 import { DistrictKYC } from '../pages/district-admin/KYC';
 import { DistrictReports } from '../pages/district-admin/Reports';
 import { DistrictPayments } from '../pages/district-admin/Payments';
+import { DistrictTasks } from '../pages/district-admin/Tasks';
+import { DistrictQueries } from '../pages/district-admin/Queries';
 import { DistrictProfile } from '../pages/district-admin/Profile';
 import { DistrictSettings } from '../pages/district-admin/Settings';
 
@@ -92,6 +95,8 @@ import { DivisionalAgentPayments } from '../pages/divisional-admin/AgentPayments
 import { DivisionalKYC } from '../pages/divisional-admin/KYC';
 import { DivisionalReports } from '../pages/divisional-admin/Reports';
 import { DivisionalPayments } from '../pages/divisional-admin/Payments';
+import { DivisionalTasks } from '../pages/divisional-admin/Tasks';
+import { DivisionalQueries } from '../pages/divisional-admin/Queries';
 import { DivisionalProfile } from '../pages/divisional-admin/Profile';
 import { DivisionalSettings } from '../pages/divisional-admin/Settings';
 
@@ -101,6 +106,7 @@ import { PincodeOverview } from '../pages/pincode-admin/Overview';
 import { PincodeCustomers } from '../pages/pincode-admin/Customers';
 import { PincodeMembershipCards } from '../pages/pincode-admin/MembershipCards';
 import { PincodeVendors } from '../pages/pincode-admin/Vendors';
+import { PincodeVendorSubscriptions } from '../pages/pincode-admin/VendorSubscriptions';
 import { PincodeVendorDetails } from '../pages/pincode-admin/VendorDetails';
 import { PincodeVendorPayments } from '../pages/pincode-admin/VendorPayments';
 import { PincodeOrders } from '../pages/pincode-admin/Orders';
@@ -158,6 +164,7 @@ export function AppRoutes() {
             <Route path="/state-admin/delivery-partners" element={<StateDeliveryPartners />} />
             <Route path="/state-admin/technicians" element={<StateTechnicians />} />
             <Route path="/state-admin/executives" element={<StateExecutives />} />
+            <Route path="/state-admin/support-team" element={<StateSupportTeam />} />
             <Route path="/state-admin/managers" element={<StateManagers level="state" />} />
             <Route path="/state-admin/managers/state" element={<StateManagers level="state" />} />
             <Route path="/state-admin/managers/district" element={<StateManagers level="district" />} />
@@ -181,12 +188,13 @@ export function AppRoutes() {
           {/* District Admin Routes */}
           <Route element={<RoleBasedRoute allowedRoles={['District Admin']} />}>
             <Route path="/district-admin/dashboard" element={<DistrictAdminDashboard />} />
-            <Route path="/district-admin/overview" element={<DistrictOverview />} />
+            <Route path="/district-admin/overview" element={<Navigate to="/district-admin/dashboard" replace />} />
             <Route path="/district-admin/divisions" element={<DistrictDivisions />} />
             <Route path="/district-admin/division-admins" element={<DistrictDivisionAdmins />} />
             <Route path="/district-admin/division-details" element={<DistrictDivisionDetails />} />
             <Route path="/district-admin/pincodes" element={<DistrictPincodes />} />
             <Route path="/district-admin/pincode-admins" element={<DistrictPincodeAdmins />} />
+            <Route path="/district-admin/pincode-details" element={<DistrictPincodeDetails />} />
             <Route path="/district-admin/customers" element={<DistrictCustomers />} />
             <Route path="/district-admin/membership-cards" element={<DistrictMembershipCards />} />
             <Route path="/district-admin/vendors" element={<DistrictVendors />} />
@@ -198,11 +206,20 @@ export function AppRoutes() {
             <Route path="/district-admin/technicians" element={<DistrictTechnicians />} />
             <Route path="/district-admin/executives" element={<DistrictExecutives />} />
             <Route path="/district-admin/support-team" element={<DistrictSupportTeam />} />
-            <Route path="/district-admin/agents" element={<DistrictAgents />} />
+            <Route path="/district-admin/managers" element={<StateManagers level="district" />} />
+            <Route path="/district-admin/managers/district" element={<StateManagers level="district" />} />
+            <Route path="/district-admin/managers/divisional" element={<StateManagers level="divisional" />} />
+            <Route path="/district-admin/managers/pincode" element={<StateManagers level="pincode" />} />
+            <Route path="/district-admin/agents" element={<DistrictAgents level="district" />} />
+            <Route path="/district-admin/agents/district" element={<DistrictAgents level="district" />} />
+            <Route path="/district-admin/agents/divisional" element={<DistrictAgents level="divisional" />} />
+            <Route path="/district-admin/agents/pincode" element={<DistrictAgents level="pincode" />} />
             <Route path="/district-admin/agent-payments" element={<DistrictAgentPayments />} />
             <Route path="/district-admin/kyc" element={<DistrictKYC />} />
             <Route path="/district-admin/reports" element={<DistrictReports />} />
             <Route path="/district-admin/payments" element={<DistrictPayments />} />
+            <Route path="/district-admin/tasks" element={<DistrictTasks />} />
+            <Route path="/district-admin/queries" element={<DistrictQueries />} />
             <Route path="/district-admin/profile" element={<DistrictProfile />} />
             <Route path="/district-admin/settings" element={<DistrictSettings />} />
           </Route>
@@ -214,6 +231,13 @@ export function AppRoutes() {
             <Route path="/divisional-admin/pincodes" element={<DivisionalPincodes />} />
             <Route path="/divisional-admin/pincode-admins" element={<DivisionalPincodeAdmins />} />
             <Route path="/divisional-admin/pincode-details" element={<DivisionalPincodeDetails />} />
+            <Route path="/divisional-admin/managers" element={<StateManagers level="divisional" />} />
+            <Route path="/divisional-admin/managers/divisional" element={<StateManagers level="divisional" />} />
+            <Route path="/divisional-admin/managers/pincode" element={<StateManagers level="pincode" />} />
+            <Route path="/divisional-admin/agents" element={<DistrictAgents level="divisional" />} />
+            <Route path="/divisional-admin/agents/divisional" element={<DistrictAgents level="divisional" />} />
+            <Route path="/divisional-admin/agents/pincode" element={<DistrictAgents level="pincode" />} />
+            <Route path="/divisional-admin/agent-payments" element={<DivisionalAgentPayments />} />
             <Route path="/divisional-admin/customers" element={<DivisionalCustomers />} />
             <Route path="/divisional-admin/membership-cards" element={<DivisionalMembershipCards />} />
             <Route path="/divisional-admin/vendors" element={<DivisionalVendors />} />
@@ -225,11 +249,11 @@ export function AppRoutes() {
             <Route path="/divisional-admin/technicians" element={<DivisionalTechnicians />} />
             <Route path="/divisional-admin/executives" element={<DivisionalExecutives />} />
             <Route path="/divisional-admin/support-team" element={<DivisionalSupportTeam />} />
-            <Route path="/divisional-admin/agents" element={<DivisionalAgents />} />
-            <Route path="/divisional-admin/agent-payments" element={<DivisionalAgentPayments />} />
             <Route path="/divisional-admin/kyc" element={<DivisionalKYC />} />
-            <Route path="/divisional-admin/reports" element={<DivisionalReports />} />
             <Route path="/divisional-admin/payments" element={<DivisionalPayments />} />
+            <Route path="/divisional-admin/reports" element={<DivisionalReports />} />
+            <Route path="/divisional-admin/tasks" element={<DivisionalTasks />} />
+            <Route path="/divisional-admin/queries" element={<DivisionalQueries />} />
             <Route path="/divisional-admin/profile" element={<DivisionalProfile />} />
             <Route path="/divisional-admin/settings" element={<DivisionalSettings />} />
           </Route>
@@ -237,11 +261,12 @@ export function AppRoutes() {
           {/* Pincode Admin Routes */}
           <Route element={<RoleBasedRoute allowedRoles={['Pincode Admin']} />}>
             <Route path="/pincode-admin/dashboard" element={<PincodeAdminDashboard />} />
-            <Route path="/pincode-admin/overview" element={<PincodeOverview />} />
+            <Route path="/pincode-admin/overview" element={<Navigate to="/pincode-admin/dashboard" replace />} />
             <Route path="/pincode-admin/customers" element={<PincodeCustomers />} />
             <Route path="/pincode-admin/membership-cards" element={<PincodeMembershipCards />} />
             <Route path="/pincode-admin/vendors" element={<PincodeVendors />} />
-            <Route path="/pincode-admin/vendor-details" element={<PincodeVendorDetails />} />
+            <Route path="/pincode-admin/vendor-subscriptions" element={<PincodeVendorSubscriptions />} />
+            <Route path="/pincode-admin/vendor-details" element={<Navigate to="/pincode-admin/vendor-subscriptions" replace />} />
             <Route path="/pincode-admin/vendor-payments" element={<PincodeVendorPayments />} />
             <Route path="/pincode-admin/orders" element={<PincodeOrders />} />
             <Route path="/pincode-admin/bookings" element={<PincodeBookings />} />

@@ -1,51 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { dataService } from '../../services/dataService';
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { DataTable } from '../../components/DataTable';
-import { ShieldCheck, Mail, Phone, MapPin } from 'lucide-react';
+import { ShieldCheck, MapPin } from 'lucide-react';
 
 export function DivisionalPincodeAdmins() {
-  const [admins, setAdmins] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const divisionName = user?.division || 'Salem North';
 
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const res = await dataService.getSubordinateAdmins();
-      if (res.success) {
-        setAdmins(res.admins.filter(a => a.role === 'Pincode Admin'));
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
+  const [admins] = useState([
+    {
+      id: 'ADM-PIN-636001',
+      name: 'Priya Narayanan',
+      email: 'pincode_admin@admin.com',
+      phone: '+91 98403 11223',
+      pincode: '636001',
+      area: 'Salem Fort / Town',
+      division: divisionName,
+      status: 'Active'
+    },
+    {
+      id: 'ADM-PIN-636002',
+      name: 'Suresh Raina',
+      email: 'pincode_admin_636002@admin.com',
+      phone: '+91 98403 44556',
+      pincode: '636002',
+      area: 'Shevapet / Bazaar',
+      division: divisionName,
+      status: 'Active'
     }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  ]);
 
   const columns = [
     {
-      header: 'Admin Details',
+      header: 'Pincode Administrator',
       accessor: 'name',
       render: (row) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={row.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
-            alt={row.name}
-            className="w-10 h-10 rounded-xl object-cover border border-cyan-500/40"
-          />
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
           <div>
-            <div className="font-bold text-white text-sm">{row.name.split(' (')[0]}</div>
-            <div className="text-[11px] text-slate-400 flex items-center gap-1">
-              <Mail className="w-3 h-3 text-slate-500" />
-              {row.email}
-            </div>
-            <div className="text-[11px] text-slate-400 flex items-center gap-1">
-              <Phone className="w-3 h-3 text-slate-500" />
-              {row.phone}
-            </div>
+            <div className="font-bold text-slate-900 dark:text-white text-xs">{row.name}</div>
+            <div className="text-[11px] text-slate-500 font-mono">{row.email}</div>
           </div>
         </div>
       )
@@ -54,26 +50,30 @@ export function DivisionalPincodeAdmins() {
       header: 'Assigned Pincode',
       accessor: 'pincode',
       render: (row) => (
-        <span className="px-3 py-1 rounded-lg font-mono font-bold text-xs bg-emerald-950 text-emerald-300 border border-emerald-700/50 flex items-center gap-1 w-fit">
-          <MapPin className="w-3.5 h-3.5" /> PIN: {row.pincode}
-        </span>
+        <div>
+          <span className="font-mono font-bold text-blue-600 dark:text-emerald-300 text-xs">
+            PIN: {row.pincode}
+          </span>
+          <div className="text-[11px] text-slate-500">{row.area}</div>
+        </div>
       )
     },
     {
-      header: 'Role Level',
-      accessor: 'role',
+      header: 'Division',
+      accessor: 'division',
+      render: (row) => <span className="text-xs text-slate-700 dark:text-slate-300 font-semibold">{row.division}</span>
+    },
+    {
+      header: 'Contact Phone',
+      accessor: 'phone',
+      render: (row) => <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">{row.phone}</span>
+    },
+    {
+      header: 'Status',
+      accessor: 'status',
       render: (row) => (
-        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-950 text-cyan-300 border border-cyan-700/40">
-          {row.role}
-        </span>
-      )
-    },
-    {
-      header: 'Access Scope',
-      accessor: () => 'Strict Pincode Isolation',
-      render: () => (
-        <span className="text-xs text-slate-300">
-          Strictly restricted to assigned pincode only
+        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700/40">
+          {row.status}
         </span>
       )
     }
@@ -82,18 +82,18 @@ export function DivisionalPincodeAdmins() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-white">Supervised Pincode Admins</h2>
-        <p className="text-xs text-slate-400">Pincode administrators operating under this Division.</p>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Supervised Pincode Admins</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Pincode administrators operating under {divisionName} Division jurisdiction.
+        </p>
       </div>
 
       <DataTable
         title="Pincode Administrators Roster"
-        subtitle="Manage and monitor subordinate Pincode Admins"
+        subtitle="Manage and monitor appointed local administrators"
         columns={columns}
         data={admins}
-        loading={loading}
-        onRefresh={loadData}
-        searchPlaceholder="Search admin..."
+        searchPlaceholder="Search admin name..."
         exportFileName="divisional_pincode_admins.csv"
       />
     </div>

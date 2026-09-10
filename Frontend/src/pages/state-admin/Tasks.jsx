@@ -147,7 +147,7 @@ export function StateTasks() {
             type="button"
             onClick={() => handleToggleStatus(row.id)}
             title={row.status === 'Completed' ? 'Mark Incomplete' : 'Mark Completed'}
-            className="mt-0.5 cursor-pointer text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+            className="mt-0.5 cursor-pointer text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition shrink-0"
           >
             <CheckCircle2 className={`w-4 h-4 ${
               row.status === 'Completed'
@@ -155,15 +155,15 @@ export function StateTasks() {
                 : 'text-slate-400'
             }`} />
           </button>
-          <div>
-            <div className={`font-bold text-sm ${row.status === 'Completed' ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-white'}`}>
+          <div className="min-w-0">
+            <div className="font-bold text-sm leading-snug text-slate-900 dark:text-white">
               {row.title}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[11px] font-mono font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-[11px] font-mono font-medium text-slate-500 dark:text-slate-400 shrink-0">
                 {row.id}
               </span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${priorityColor(row.priority)}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${priorityColor(row.priority)} shrink-0`}>
                 {row.priority}
               </span>
             </div>
@@ -174,6 +174,7 @@ export function StateTasks() {
     {
       header: 'Assigned Role & Location',
       accessor: 'assignedTo',
+      className: 'whitespace-nowrap',
       render: (row) => (
         <div>
           <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
@@ -189,8 +190,9 @@ export function StateTasks() {
     {
       header: 'Category',
       accessor: 'category',
+      className: 'whitespace-nowrap',
       render: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
+        <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium whitespace-nowrap">
           <Tag className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <span>{row.category}</span>
         </div>
@@ -199,16 +201,18 @@ export function StateTasks() {
     {
       header: 'Due Date',
       accessor: 'dueDate',
+      className: 'whitespace-nowrap',
       render: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+        <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 whitespace-nowrap">
           <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <span className="font-mono">{row.dueDate}</span>
+          <span className="font-mono whitespace-nowrap">{row.dueDate}</span>
         </div>
       )
     },
     {
       header: 'Status',
       accessor: 'status',
+      className: 'whitespace-nowrap',
       render: (row) => <StatusBadge status={row.status} />
     }
   ];

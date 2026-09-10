@@ -8,8 +8,11 @@
   --bg-card: #ffffff;
   --bg-subtle: #f1f5f9;
   --border-subtle: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
+  --navy-sidebar: #001D51;
+  --navy-secondary: #1e355b;
+  --navy-muted: #3a527c;
+  --text-main: #001D51;
+  --text-muted: #1e355b;
   color-scheme: light;
 }
 
@@ -28,8 +31,11 @@ html.light, body.light, [data-theme="light"], .light {
   --bg-card: #ffffff;
   --bg-subtle: #f1f5f9;
   --border-subtle: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
+  --navy-sidebar: #001D51;
+  --navy-secondary: #1e355b;
+  --navy-muted: #3a527c;
+  --text-main: #001D51;
+  --text-muted: #1e355b;
   color-scheme: light;
 }
 
@@ -158,13 +164,13 @@ html.light [class*="bg-slate-800"], body.light [class*="bg-slate-800"], .light [
 html.light [class*="bg-slate-900"], body.light [class*="bg-slate-900"], .light [class*="bg-slate-900"], [data-theme="light"] [class*="bg-slate-900"] {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
-  color: #0f172a !important;
+  color: #001D51 !important;
 }
 
 html.light [class*="bg-slate-950"], body.light [class*="bg-slate-950"], .light [class*="bg-slate-950"], [data-theme="light"] [class*="bg-slate-950"] {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
-  color: #64748b !important;
+  color: #1e355b !important;
 }
 
 /* Strict Light Mode Overrides for Dark Borders */
@@ -205,51 +211,51 @@ html.light [class*="border-rose-800"], body.light [class*="border-rose-800"], .l
 }
 
 /* Strict Light Mode Overrides for Table & Card Texts */
-html.light table [class*="text-white"],
-html.light tbody [class*="text-white"],
-body.light table [class*="text-white"],
-body.light tbody [class*="text-white"] {
-  color: #0f172a !important;
+html.light table:not(aside table) [class*="text-white"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+html.light tbody:not(aside tbody) [class*="text-white"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light table:not(aside table) [class*="text-white"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light tbody:not(aside tbody) [class*="text-white"]:not(button *):not([class*="bg-"]):not([class*="badge"]) {
+  color: #001D51 !important;
 }
 
-html.light table [class*="text-slate-200"],
-html.light tbody [class*="text-slate-200"],
-body.light table [class*="text-slate-200"],
-body.light tbody [class*="text-slate-200"],
-html.light table [class*="text-slate-300"],
-html.light tbody [class*="text-slate-300"],
-body.light table [class*="text-slate-300"],
-body.light tbody [class*="text-slate-300"] {
-  color: #1e293b !important;
+html.light table:not(aside table) [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+html.light tbody:not(aside tbody) [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light table:not(aside table) [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light tbody:not(aside tbody) [class*="text-slate-200"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+html.light table:not(aside table) [class*="text-slate-300"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+html.light tbody:not(aside tbody) [class*="text-slate-300"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light table:not(aside table) [class*="text-slate-300"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light tbody:not(aside tbody) [class*="text-slate-300"]:not(button *):not([class*="bg-"]):not([class*="badge"]) {
+  color: #001D51 !important;
 }
 
-html.light table [class*="text-slate-400"],
-html.light tbody [class*="text-slate-400"],
-body.light table [class*="text-slate-400"],
-body.light tbody [class*="text-slate-400"] {
-  color: #64748b !important;
+html.light table:not(aside table) [class*="text-slate-400"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+html.light tbody:not(aside tbody) [class*="text-slate-400"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light table:not(aside table) [class*="text-slate-400"]:not(button *):not([class*="bg-"]):not([class*="badge"]),
+body.light tbody:not(aside tbody) [class*="text-slate-400"]:not(button *):not([class*="bg-"]):not([class*="badge"]) {
+  color: #1e355b !important;
 }
 
-/* Global Headings Theme Rules (prevents white-on-white text in light mode) */
-html.light h1:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-html.light h2:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-html.light h3:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-html.light h4:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-body.light h1:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-body.light h2:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-body.light h3:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-body.light h4:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-.light h1:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-.light h2:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-.light h3:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
-.light h4:not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]) {
-  color: #0f172a !important;
+/* Global Headings Theme Rules (exact match with left sidebar dark navy #001D51) */
+html.light h1:not(aside h1):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+html.light h2:not(aside h2):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+html.light h3:not(aside h3):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+html.light h4:not(aside h4):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h1:not(aside h1):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h2:not(aside h2):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h3:not(aside h3):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+body.light h4:not(aside h4):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h1:not(aside h1):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h2:not(aside h2):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h3:not(aside h3):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]),
+.light h4:not(aside h4):not([class*="text-blue"]):not([class*="text-indigo"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]) {
+  color: #001D51 !important;
 }
 
 /* Global Tables Theme Rules */
-html.light thead, body.light thead, .light thead {
+html.light thead:not(aside thead), body.light thead:not(aside thead), .light thead:not(aside thead) {
   background-color: #f8fafc !important;
-  color: #64748b !important;
+  color: #1e355b !important;
   border-bottom-color: #e2e8f0 !important;
 }
 
@@ -259,8 +265,75 @@ html.dark thead, body.dark thead, .dark thead {
   border-bottom-color: #1e293b !important;
 }
 
-html.light tbody, body.light tbody, .light tbody {
-  color: #1e293b !important;
+html.light tbody:not(aside tbody), body.light tbody:not(aside tbody), .light tbody:not(aside tbody) {
+  color: #001D51 !important;
+}
+
+/* ==========================================================================
+   Dashboard Consistent Dark Navy (#001D51) Text System
+   Matches exactly the left sidebar dark navy blue background color.
+   Applied across dashboard headings, labels, card titles, values, table text,
+   descriptions, and primary text elements.
+   Sidebar, buttons, icons, and backgrounds remain completely untouched.
+   ========================================================================== */
+
+/* Primary Dashboard Text: Headings, card titles, stat values, primary labels, table data */
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, .admin-card, .glass-panel, main, header) :is(
+  .text-slate-900,
+  .text-slate-800,
+  .text-slate-700,
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700,
+  .text-black,
+  h1, h2, h3, h4, h5, h6,
+  label
+):not(aside *):not(button):not(button *):not(a.btn):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-purple"]):not([class*="bg-cyan"]):not([class*="bg-teal"]):not(svg):not(svg *) {
+  color: #001D51 !important;
+}
+
+/* Secondary & Muted Dashboard Text: Kept slightly lighter navy (#1e355b) for visual hierarchy */
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, .admin-card, .glass-panel, main, header) :is(
+  .text-slate-500,
+  .text-slate-600,
+  .text-gray-500,
+  .text-gray-600
+):not(aside *):not(button):not(button *):not(a.btn):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-purple"]):not([class*="bg-cyan"]):not([class*="bg-teal"]):not(svg):not(svg *) {
+  color: #1e355b !important;
+}
+
+/* Tertiary / Subtle Muted Text (#3a527c) */
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, .admin-card, .glass-panel, main, header) :is(
+  .text-slate-400,
+  .text-gray-400
+):not(aside *):not(button):not(button *):not(a.btn):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-purple"]):not([class*="bg-cyan"]):not([class*="bg-teal"]):not(svg):not(svg *) {
+  color: #3a527c !important;
+}
+
+/* Card titles, values, labels and descriptions inside admin-card */
+:is(html.light, body.light, html:not(.dark)) .admin-card:not(aside .admin-card) {
+  color: #001D51;
+}
+
+:is(html.light, body.light, html:not(.dark)) .admin-card:not(aside .admin-card) :is(
+  h1, h2, h3, h4, h5, h6,
+  .font-mono.font-bold,
+  .font-bold,
+  .font-extrabold,
+  .font-black
+):not(button):not(button *):not([class*="bg-emerald"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not(svg):not(svg *) {
+  color: #001D51 !important;
+}
+
+/* Form controls text in dashboard */
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, main) input:not([type="checkbox"]):not([type="radio"]),
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, main) select,
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, main) textarea {
+  color: #001D51 !important;
+}
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, main) input::placeholder,
+:is(html.light, body.light, html:not(.dark)) :is(.dashboard-content-area, .dashboard-modal, main) textarea::placeholder {
+  color: #586f97 !important;
 }
 
 html.light tbody tr:hover, body.light tbody tr:hover, .light tbody tr:hover {

@@ -24,7 +24,7 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-lg' 
       {/* Click outside backdrop to close */}
       <div className="fixed inset-0 -z-10" onClick={onClose} />
 
-      <div className={`relative w-full ${maxWidth} my-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transition-colors`}>
+      <div className={`relative w-full ${maxWidth} my-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transition-colors dashboard-modal`}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>

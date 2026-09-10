@@ -8,10 +8,11 @@ function getJobs(req, res) {
     if (search) {
       const q = search.toLowerCase();
       scoped = scoped.filter(j =>
-        j.title.toLowerCase().includes(q) ||
-        j.customerName.toLowerCase().includes(q) ||
-        j.technicianName.toLowerCase().includes(q) ||
-        j.pincode.includes(q)
+        (j.title || j.jobTitle || '').toLowerCase().includes(q) ||
+        (j.customerName || '').toLowerCase().includes(q) ||
+        (j.vendorName || '').toLowerCase().includes(q) ||
+        (j.id || '').toLowerCase().includes(q) ||
+        (j.pincode || '').includes(q)
       );
     }
     if (priority) {

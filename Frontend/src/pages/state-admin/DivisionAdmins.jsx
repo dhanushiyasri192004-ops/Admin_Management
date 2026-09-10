@@ -1,118 +1,184 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { DataTable } from '../../components/DataTable';
-import { ShieldCheck, Mail, Phone, Layers, Building2 } from 'lucide-react';
+import { Modal } from '../../components/Modal';
+import { useTheme } from '../../context/ThemeContext';
+import { 
+  Layers, 
+  Mail, 
+  Phone, 
+  Eye, 
+  GraduationCap, 
+  Building2, 
+  MapPin, 
+  Calendar, 
+  Award, 
+  ShieldCheck 
+} from 'lucide-react';
 
 export function StateDivisionAdmins() {
   const { user } = useAuth();
-  const [admins, setAdmins] = useState([
+  const { isDark } = useTheme();
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+
+  const [admins] = useState([
     {
       id: 'ADM-DIV-01',
+      employeeCode: 'EMP-TN-DIV-001',
       name: 'Karthik Subramanian',
       email: 'divisional_admin@admin.com',
       phone: '+91 98401 23456',
+      emergencyPhone: '+91 98401 23499',
       division: 'Salem North',
+      code: 'DIV-SLM-N',
       district: 'Salem',
+      state: 'Tamil Nadu',
+      pincodesCount: 2,
       pincodes: ['636001', '636002'],
       status: 'Active',
-      joinedDate: '15 Jan 2026'
+      joinedDate: '15 Jan 2026',
+      qualification: 'Master of Public Administration (MPA), B.Sc (Computer Science)',
+      experience: '7+ years in Sub-Divisional Operations & Public Administration',
+      specialization: 'Zonal Urban Planning & Merchant Cluster Management',
+      address: 'Divisional Administrative Hub, 14 Fort Main Road, Salem North - 636001, Tamil Nadu'
     },
     {
       id: 'ADM-DIV-02',
-      name: 'Venkatesh Rao',
-      email: 'div_admin_south@admin.com',
+      employeeCode: 'EMP-TN-DIV-002',
+      name: 'Manoj Kumar',
+      email: 'salem_south_admin@admin.com',
       phone: '+91 98402 88991',
+      emergencyPhone: '+91 98402 88999',
       division: 'Salem South',
+      code: 'DIV-SLM-S',
       district: 'Salem',
+      state: 'Tamil Nadu',
+      pincodesCount: 2,
       pincodes: ['636003', '636004'],
       status: 'Active',
-      joinedDate: '20 Jan 2026'
+      joinedDate: '20 Jan 2026',
+      qualification: 'MBA in Operations & Logistics, B.Com',
+      experience: '6+ years in Regional Operations & Merchant Onboarding',
+      specialization: 'Retail & Service Merchant Networks, Citizen Services',
+      address: 'South Division Zonal Office, 88 Gugai Bypass Road, Salem - 636004, Tamil Nadu'
     },
     {
       id: 'ADM-DIV-03',
-      name: 'Ramesh Krishnan',
-      email: 'div_cbe_central@admin.com',
+      employeeCode: 'EMP-TN-DIV-003',
+      name: 'Praveen Chandran',
+      email: 'cbe_central_admin@admin.com',
       phone: '+91 98402 44556',
+      emergencyPhone: '+91 98402 44599',
       division: 'Coimbatore Central',
+      code: 'DIV-CBE-C',
       district: 'Coimbatore',
+      state: 'Tamil Nadu',
+      pincodesCount: 2,
       pincodes: ['641001', '641002'],
       status: 'Active',
-      joinedDate: '18 Jan 2026'
+      joinedDate: '18 Jan 2026',
+      qualification: 'M.Tech in Industrial Systems, B.E. (Mechanical)',
+      experience: '9+ years in Metropolitan Divisional Operations',
+      specialization: 'Commercial Hubs, High-Volume Logistics & Vendor Systems',
+      address: 'Central Division Zonal Center, 22 DB Road, RS Puram, Coimbatore - 641002, Tamil Nadu'
     },
     {
       id: 'ADM-DIV-04',
-      name: 'Meera S',
-      email: 'div_cbe_north@admin.com',
+      employeeCode: 'EMP-TN-DIV-004',
+      name: 'Divya Bharathi',
+      email: 'cbe_north_admin@admin.com',
       phone: '+91 98402 77889',
+      emergencyPhone: '+91 98402 77899',
       division: 'Coimbatore North',
+      code: 'DIV-CBE-N',
       district: 'Coimbatore',
+      state: 'Tamil Nadu',
+      pincodesCount: 2,
       pincodes: ['641003', '641004'],
       status: 'Active',
-      joinedDate: '22 Jan 2026'
+      joinedDate: '22 Jan 2026',
+      qualification: 'M.Sc in Information Systems, B.Sc Mathematics',
+      experience: '8+ years in Industrial Operations & Nodal Administration',
+      specialization: 'Tech Zone Management, Industrial & Service Franchises',
+      address: 'North Division Secretariat, 5 Tech Park Way, Peelamedu, Coimbatore - 641004, Tamil Nadu'
     }
   ]);
 
   const columns = [
     {
-      header: 'Division Administrator',
+      header: 'NAME',
       accessor: 'name',
       render: (row) => (
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-            <ShieldCheck className="w-4 h-4" />
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+            isDark ? 'bg-indigo-950/80 text-cyan-300 border border-indigo-800/60' : 'bg-blue-100 text-blue-700 border border-blue-200'
+          }`}>
+            {row.name[0]}
           </div>
           <div>
-            <div className="font-bold text-slate-900 dark:text-white text-xs">{row.name}</div>
-            <div className="text-[11px] text-slate-500 font-mono">{row.email}</div>
+            <div className={`font-bold text-xs ${isDark ? 'text-white' : 'text-slate-900'}`}>{row.name}</div>
+            <div className={`text-[10px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{row.employeeCode || row.id}</div>
           </div>
         </div>
       )
     },
     {
-      header: 'Assigned Division & District',
+      header: 'EMAIL / MOBILE NUMBER',
+      accessor: 'email',
+      render: (row) => (
+        <div className="space-y-0.5">
+          <div className={`text-xs font-medium flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+            <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+            <span className="font-mono text-[11px]">{row.email}</span>
+          </div>
+          <div className={`text-xs flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+            <span className="font-mono text-[11px]">{row.phone}</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'ASSIGNED DIVISION',
       accessor: 'division',
       render: (row) => (
         <div>
-          <span className="font-bold text-blue-600 dark:text-cyan-300 text-xs flex items-center gap-1">
+          <span className={`font-bold text-xs flex items-center gap-1.5 ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>
             <Layers className="w-3.5 h-3.5 text-slate-400" />
-            {row.division} Division
+            {row.division}
           </span>
-          <span className="text-[11px] text-slate-500">{row.district} District</span>
+          <span className={`text-[10px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            {row.district} District • Code: {row.code}
+          </span>
         </div>
       )
     },
     {
-      header: 'Covered Pincodes',
-      accessor: 'pincodes',
-      render: (row) => (
-        <div className="flex gap-1 flex-wrap">
-          {row.pincodes.map((pin) => (
-            <span
-              key={pin}
-              className="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-            >
-              {pin}
-            </span>
-          ))}
-        </div>
-      )
-    },
-    {
-      header: 'Contact',
-      accessor: 'phone',
-      render: (row) => (
-        <span className="text-xs text-slate-600 dark:text-slate-400 font-mono flex items-center gap-1">
-          <Phone className="w-3 h-3 text-slate-400" /> {row.phone}
-        </span>
-      )
-    },
-    {
-      header: 'Status',
+      header: 'STATUS',
       accessor: 'status',
       render: (row) => (
-        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-900/50">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-900/50">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           {row.status}
         </span>
+      )
+    },
+    {
+      header: 'VIEW',
+      accessor: 'actions',
+      render: (row) => (
+        <button
+          type="button"
+          onClick={() => setSelectedAdmin(row)}
+          className={`inline-flex items-center justify-center p-2 rounded-lg border transition shadow-2xs cursor-pointer ${
+            isDark
+              ? 'bg-slate-800 border-slate-700 text-cyan-300 hover:bg-slate-700 hover:text-white'
+              : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100 hover:text-blue-800'
+          }`}
+          title="View Division Admin Profile"
+        >
+          <Eye className="w-4 h-4" />
+        </button>
       )
     }
   ];
@@ -120,21 +186,177 @@ export function StateDivisionAdmins() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">State Division Administrators</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          Roster of divisional administrators managing regional operational clusters across {user?.state || 'Tamil Nadu'}.
+        <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>State Division Administrators</h2>
+        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+          Supervisory personnel and nodal officers assigned to divisional jurisdictions across {user?.state || 'Tamil Nadu'}.
         </p>
       </div>
 
       <DataTable
         title="Division Admins Directory"
-        subtitle="Divisional hierarchy administrators and contact records"
+        subtitle="Roster of division administrators, contact channels and credential status"
         columns={columns}
         data={admins}
         loading={false}
-        searchPlaceholder="Search admin by name, division, or district..."
+        searchPlaceholder="Search admin by name, division, or email..."
         exportFileName="state_division_admins.csv"
       />
+
+      {/* Division Admin Details Modal */}
+      <Modal
+        isOpen={!!selectedAdmin}
+        onClose={() => setSelectedAdmin(null)}
+        title="Division Administrator Profile"
+        maxWidth="max-w-2xl"
+      >
+        {selectedAdmin && (
+          <div className="space-y-5">
+            {/* Top Profile Header */}
+            <div className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${
+              isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200/80'
+            }`}>
+              <div className="flex items-center gap-3.5">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold ${
+                  isDark ? 'bg-indigo-950 border border-indigo-700/60 text-cyan-300' : 'bg-blue-600 text-white shadow-sm'
+                }`}>
+                  {selectedAdmin.name[0]}
+                </div>
+                <div>
+                  <h4 className={`text-base font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    {selectedAdmin.name}
+                  </h4>
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span>Division Administrator</span>
+                    <span>•</span>
+                    <span className="font-mono">{selectedAdmin.employeeCode}</span>
+                  </div>
+                </div>
+              </div>
+
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-900/50">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                {selectedAdmin.status}
+              </span>
+            </div>
+
+            {/* Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Contact Card */}
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <Phone className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Contact Information</span>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Official Email:</span>
+                    <div className={`font-mono font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.email}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Mobile Number:</span>
+                    <div className={`font-mono font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.phone}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Emergency Contact:</span>
+                    <div className={`font-mono font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.emergencyPhone || 'N/A'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Jurisdiction Card */}
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <Building2 className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Jurisdiction & Scope</span>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Assigned Division:</span>
+                    <div className={`font-bold ${isDark ? 'text-cyan-300' : 'text-blue-600'}`}>
+                      {selectedAdmin.division} (Code: {selectedAdmin.code})
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Parent District:</span>
+                    <div className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>
+                      {selectedAdmin.district} District
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Supervisory Scope:</span>
+                    <div className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>
+                      {selectedAdmin.pincodesCount} Pincodes ({selectedAdmin.pincodes?.join(', ')})
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Date of Appointment:</span>
+                    <div className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.joinedDate}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Qualifications & Experience Card */}
+              <div className={`p-4 rounded-xl border space-y-3 md:col-span-2 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <GraduationCap className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Qualification & Professional Credentials</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Academic Qualification:</span>
+                    <div className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.qualification}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-slate-400">Relevant Experience:</span>
+                    <div className={`font-semibold ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>{selectedAdmin.experience}</div>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="text-slate-500 dark:text-slate-400">Functional Domain:</span>
+                    <div className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{selectedAdmin.specialization}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Official Administrative Address */}
+              <div className={`p-4 rounded-xl border space-y-2 md:col-span-2 ${
+                isDark ? 'bg-slate-800/40 border-slate-800' : 'bg-slate-50/70 border-slate-200'
+              }`}>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/60 pb-2">
+                  <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Official Divisional Secretariat Address</span>
+                </div>
+                <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {selectedAdmin.address}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setSelectedAdmin(null)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                    : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                Close Profile
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

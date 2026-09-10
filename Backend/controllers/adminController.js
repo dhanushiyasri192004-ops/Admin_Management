@@ -125,20 +125,66 @@ function updateDistrictStatus(req, res) {
   }
 }
 
+function updateDivisionStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    let updated = null;
+
+    db.hierarchy.states.forEach(s => {
+      s.districts.forEach(d => {
+        d.divisions?.forEach(div => {
+          if (div.id === id || div.name === id) {
+            div.status = status;
+            updated = div;
+          }
+        });
+      });
+    });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Division not found' });
+    }
+
+    return res.json({ success: true, message: `Division status updated to ${status}`, division: updated });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update division status', error: error.message });
+  }
+}
+
 function getDivisions(req, res) {
   try {
     const stateObj = db.hierarchy.states.find(s => s.name === req.user.state);
     if (!stateObj) return res.json({ success: true, divisions: [] });
+
+    const adminMapping = {
+      'Salem North': { name: 'Karthik Subramanian', email: 'divisional_admin@admin.com' },
+      'Salem South': { name: 'Manoj Kumar', email: 'salem_south_admin@admin.com' },
+      'Coimbatore Central': { name: 'Praveen Chandran', email: 'cbe_central_admin@admin.com' },
+      'Coimbatore North': { name: 'Divya Bharathi', email: 'cbe_north_admin@admin.com' },
+      'Pune West': { name: 'Sameer Joshi', email: 'pune_west_admin@admin.com' },
+      'Pune East': { name: 'Neha Kulkarni', email: 'pune_east_admin@admin.com' }
+    };
 
     let divisions = [];
     stateObj.districts.forEach(d => {
       if (!req.user.district || d.name === req.user.district) {
         d.divisions.forEach(div => {
           if (!req.user.division || div.name === req.user.division) {
+            const assigned = db.admins.find(a => a.division === div.name && (a.role === 'Divisional Admin' || a.role.includes('Divisional')));
+            const fallback = adminMapping[div.name] || { name: `${div.name} Admin`, email: `${div.name.toLowerCase().replace(/\s+/g, '_')}_admin@admin.com` };
+
+            const adminName = assigned ? assigned.name.replace(/\s*\(.*?\)\s*/g, '').trim() : fallback.name;
+            const adminEmail = assigned ? assigned.email : fallback.email;
+            const status = div.status || 'Active';
+
             divisions.push({
               ...div,
               districtName: d.name,
-              stateName: stateObj.name
+              stateName: stateObj.name,
+              adminName,
+              adminEmail,
+              status
             });
           }
         });
@@ -156,5 +202,7 @@ module.exports = {
   getSubordinateAdmins,
   getDistricts,
   updateDistrictStatus,
+  updateDivisionStatus,
   getDivisions
 };
+

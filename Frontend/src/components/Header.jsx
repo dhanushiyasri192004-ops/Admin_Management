@@ -56,17 +56,17 @@ export function Header({ setIsSidebarOpen }) {
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-3">
-          <h1 className={`text-base sm:text-lg font-black ${
-            isDark ? 'text-blue-400' : 'text-[#154694]'
-          } tracking-tight font-sans uppercase`}>
+        <div className="flex flex-col justify-center">
+          <h1 className={`text-sm sm:text-base font-black ${
+            isDark ? 'text-blue-400' : 'text-[#001D51]'
+          } tracking-tight font-sans uppercase leading-tight`}>
             {getDashboardTitle()}
           </h1>
 
           {/* Location Badge */}
-          <div className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
-            isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'
-          } text-[11px] font-semibold`}>
+          <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md border w-fit mt-0.5 ${
+            isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-200 text-[#001D51]'
+          } text-[10px] sm:text-[11px] font-semibold`}>
             <MapPin className={`w-3 h-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
             <span>{getLocationSubtitle()}</span>
           </div>
@@ -79,11 +79,11 @@ export function Header({ setIsSidebarOpen }) {
         <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border ${
           isDark
             ? 'bg-slate-800/90 border-slate-700 text-slate-200 hover:bg-slate-700/80'
-            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+            : 'bg-slate-50 border-slate-200 text-[#001D51] hover:bg-slate-100'
         } text-xs font-semibold shadow-sm cursor-pointer transition`}>
-          <Calendar className={`w-3.5 h-3.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
+          <Calendar className={`w-3.5 h-3.5 ${isDark ? 'text-slate-400' : 'text-[#1e355b]'}`} />
           <span>{dateFilter}</span>
-          <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5 text-slate-400" />
+          <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5 text-[#1e355b]" />
         </div>
 
         {/* Search button / input */}
@@ -100,7 +100,7 @@ export function Header({ setIsSidebarOpen }) {
                 className={`w-40 sm:w-56 px-3 py-1 text-xs rounded-xl border ${
                   isDark
                     ? 'bg-slate-800 border-slate-600 text-slate-100'
-                    : 'bg-slate-100 border-slate-300 text-slate-900'
+                    : 'bg-slate-100 border-slate-300 text-[#001D51]'
                 } focus:outline-none`}
               />
             </div>

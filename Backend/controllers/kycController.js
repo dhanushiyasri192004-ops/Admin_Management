@@ -14,13 +14,17 @@ function getKYCRecords(req, res) {
     if (search) {
       const q = search.toLowerCase();
       scoped = scoped.filter(k =>
-        k.name.toLowerCase().includes(q) ||
-        k.docNumber.toLowerCase().includes(q) ||
-        k.pincode.includes(q)
+        (k.businessName || '').toLowerCase().includes(q) ||
+        (k.vendorName || '').toLowerCase().includes(q) ||
+        (k.name || '').toLowerCase().includes(q) ||
+        (k.category || '').toLowerCase().includes(q) ||
+        (k.address || '').toLowerCase().includes(q) ||
+        (k.verifiedBy || '').toLowerCase().includes(q) ||
+        (k.pincode || '').includes(q)
       );
     }
 
-    return res.json({ success: true, count: scoped.length, records: scoped });
+    return res.json({ success: true, count: scoped.length, records: scoped, kyc: scoped });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch KYC records', error: error.message });
   }

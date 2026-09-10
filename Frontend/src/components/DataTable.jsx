@@ -18,7 +18,8 @@ export function DataTable({
   actions = null,
   customHeader = null,
   exportFileName = 'export.csv',
-  itemsPerPage = 8
+  itemsPerPage = 8,
+  onRowClick = null
 }) {
   const { isDark } = useTheme();
   const [search, setSearch] = useState('');
@@ -93,7 +94,7 @@ export function DataTable({
           customHeader
         )
       ) : (
-        <div className={`p-4 sm:p-5 border-b ${
+        <div className={`p-4 sm:px-5 sm:py-3.5 border-b ${
           isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50/50'
         } flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 transition-colors`}>
           <div className="min-w-0">
@@ -181,7 +182,7 @@ export function DataTable({
           } uppercase tracking-wider text-[11px] border-b transition-colors`}>
             <tr>
               {columns.map((col, idx) => (
-                <th key={idx} className={`px-4 py-3 font-semibold ${col.className || ''}`}>
+                <th key={idx} className={`px-3.5 sm:px-4 py-3 font-semibold ${col.className || ''}`}>
                   {col.header}
                 </th>
               ))}
@@ -192,7 +193,7 @@ export function DataTable({
               Array.from({ length: 4 }).map((_, rIdx) => (
                 <tr key={rIdx} className="animate-pulse">
                   {columns.map((_, cIdx) => (
-                    <td key={cIdx} className="px-4 py-3">
+                    <td key={cIdx} className="px-3.5 sm:px-4 py-3">
                       <div className={`h-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'} rounded w-3/4`}></div>
                     </td>
                   ))}
@@ -209,9 +210,13 @@ export function DataTable({
               </tr>
             ) : (
               paginatedData.map((row, rowIdx) => (
-                <tr key={row.id || rowIdx} className={`${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'} transition-colors`}>
+                <tr
+                  key={row.id || rowIdx}
+                  onClick={() => onRowClick && onRowClick(row)}
+                  className={`${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'} ${onRowClick ? 'cursor-pointer' : ''} transition-colors`}
+                >
                   {columns.map((col, colIdx) => (
-                    <td key={colIdx} className={`px-4 py-3 ${col.className || ''}`}>
+                    <td key={colIdx} className={`px-3.5 sm:px-4 py-3 align-middle ${col.className || ''}`}>
                       {col.render ? col.render(row) : (
                         typeof col.accessor === 'function' ? col.accessor(row) : row[col.accessor]
                       )}

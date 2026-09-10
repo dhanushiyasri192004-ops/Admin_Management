@@ -21,7 +21,13 @@ export default {
           900: '#312e81',
           950: '#1e1b4b',
         },
-        sidebar: '#0f172a',
+        sidebar: '#001D51',
+        navy: {
+          DEFAULT: '#001D51',
+          primary: '#001D51',
+          secondary: '#1e355b',
+          muted: '#3a527c',
+        },
         surface: '#1e293b'
       },
       fontFamily: {

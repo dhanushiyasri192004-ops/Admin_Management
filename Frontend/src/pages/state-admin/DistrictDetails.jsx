@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Modal } from '../../components/Modal';
 import { 
@@ -15,13 +15,18 @@ import {
   Truck, 
   Wrench, 
   Award, 
-  CreditCard 
+  CreditCard,
+  X
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function StateDistrictDetails() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const districtFilter = searchParams.get('district');
+
   const [selectedDistrict, setSelectedDistrict] = useState(null);
 
   const districtsData = [
@@ -107,17 +112,48 @@ export function StateDistrictDetails() {
     { label: 'Total Membership Cards', value: dst.totalMembershipCards?.toLocaleString(), icon: CreditCard, color: 'text-rose-600 bg-rose-50 dark:bg-rose-950/60 dark:text-rose-400 border-rose-100 dark:border-rose-900/50' }
   ];
 
+  const filteredDistricts = districtFilter
+    ? districtsData.filter(d => d.name.toLowerCase() === districtFilter.toLowerCase() || d.id.toLowerCase() === districtFilter.toLowerCase())
+    : districtsData;
+  const displayDistricts = filteredDistricts.length > 0 ? filteredDistricts : districtsData;
+
+  useEffect(() => {
+    if (districtFilter) {
+      const match = districtsData.find(d => d.name.toLowerCase() === districtFilter.toLowerCase() || d.id.toLowerCase() === districtFilter.toLowerCase());
+      if (match) setSelectedDistrict(match);
+    }
+  }, [districtFilter]);
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">State District Operational Details</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          In-depth structural breakdown and operational health metrics of each authorized district in {user?.state || 'Tamil Nadu'}.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">State District Operational Details</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            In-depth structural breakdown and operational health metrics of each authorized district in {user?.state || 'Tamil Nadu'}.
+          </p>
+        </div>
+
+        {districtFilter && (
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-900/50">
+              <Building2 className="w-3.5 h-3.5" />
+              <span>District: {districtFilter}</span>
+              <button
+                type="button"
+                onClick={() => navigate('/state-admin/district-details')}
+                className="ml-1 p-0.5 hover:bg-blue-200/60 dark:hover:bg-blue-900/60 rounded-full transition cursor-pointer"
+                title="Clear filter"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {districtsData.map((dst) => (
+        {displayDistricts.map((dst) => (
           <div
             key={dst.id}
             className="admin-card p-5 bg-white dark:bg-[#131f37] border border-slate-200/90 dark:border-[#1f3358] shadow-sm space-y-4 rounded-2xl"

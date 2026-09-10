@@ -1,22 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { dataService } from '../../services/dataService';
 import { DataTable } from '../../components/DataTable';
 import { StatusBadge } from '../../components/Badge';
-import { Modal } from '../../components/Modal';
-import { FileCheck2, ShieldCheck, XCircle, CheckCircle } from 'lucide-react';
+import { VendorKYCDetailsModal } from '../../components/VendorKYCDetailsModal';
+import {
+  FileCheck2,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Eye,
+  Store,
+  Tag,
+  MapPin,
+  ShieldCheck,
+  User
+} from 'lucide-react';
 
 export function PincodeKYC() {
-  const [kycRecords, setKycRecords] = useState([]);
+  const { user } = useAuth();
+  const [kycList, setKycList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeRecord, setActiveRecord] = useState(null);
-  const [reason, setReason] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await dataService.getKYCRecords();
-      if (res.success) setKycRecords(res.records);
+      const res = await dataService.getKYC();
+      if (res.success) {
+        setKycList(res.kyc || res.records || []);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -28,157 +41,208 @@ export function PincodeKYC() {
     loadData();
   }, []);
 
-  const handleProcess = async (status) => {
-    if (!activeRecord) return;
-    setSubmitting(true);
-    try {
-      await dataService.processKYC(activeRecord.id, {
-        status,
-        reason
-      });
-      setActiveRecord(null);
-      setReason('');
-      loadData();
-    } catch (e) {
-      alert(e.message || 'KYC verification failed');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // Compute 4 KPI Cards
+  const kpiStats = useMemo(() => {
+    const totalKYC = kycList.length;
+    const approvedKYC = kycList.filter(k => {
+      const s = (k.status || '').toLowerCase();
+      return s === 'approved' || s === 'verified';
+    }).length;
+    const pendingKYC = kycList.filter(k => {
+      const s = (k.status || '').toLowerCase();
+      return s === 'pending';
+    }).length;
+    const rejectedKYC = kycList.filter(k => {
+      const s = (k.status || '').toLowerCase();
+      return s === 'rejected';
+    }).length;
+
+    return {
+      totalKYC,
+      approvedKYC,
+      pendingKYC,
+      rejectedKYC
+    };
+  }, [kycList]);
 
   const columns = [
     {
-      header: 'Applicant Name & Type',
-      accessor: 'name',
+      header: 'VENDOR NAME',
+      accessor: (row) => `${row.businessName || row.name || ''} ${row.vendorName || ''}`,
       render: (row) => (
-        <div>
-          <div className="font-bold text-white text-sm">{row.name}</div>
-          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
-            {row.type}
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 shrink-0">
+            <Store className="w-4 h-4" />
+          </div>
+          <div className="min-w-0">
+            <div className="font-bold text-slate-900 dark:text-white text-xs truncate max-w-[200px]" title={row.businessName || row.name}>
+              {row.businessName || row.name || 'Vendor Enterprise'}
+            </div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+              <User className="w-3 h-3 text-slate-400 shrink-0" />
+              <span className="truncate max-w-[180px]">Owner: {row.vendorName || row.contactPerson || 'Authorized Merchant'}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'CATEGORY',
+      accessor: 'category',
+      render: (row) => {
+        const cat = row.category || 'Services';
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-semibold border border-indigo-200/80 dark:border-indigo-900/50 whitespace-nowrap">
+            <Tag className="w-3 h-3 text-indigo-500 shrink-0" />
+            <span>{cat}</span>
           </span>
-        </div>
-      )
+        );
+      }
     },
     {
-      header: 'Document Information',
-      accessor: 'docType',
+      header: 'ADDRESS',
+      accessor: (row) => `${row.address || ''} ${row.pincode || ''}`,
       render: (row) => (
-        <div>
-          <div className="text-xs font-semibold text-slate-200">{row.docType}</div>
-          <div className="text-[11px] font-mono text-slate-400 mt-0.5">{row.docNumber}</div>
+        <div className="text-xs">
+          <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1 truncate max-w-[220px]" title={row.address}>
+            <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span className="truncate">{row.address || 'Local Pincode'}</span>
+          </div>
+          <div className="font-mono text-emerald-600 dark:text-emerald-400 text-[11px] font-bold pl-4.5 mt-0.5 whitespace-nowrap">
+            PIN: {row.pincode || user?.pincode || '636001'}
+          </div>
         </div>
       )
     },
     {
-      header: 'Submitted Date',
-      accessor: 'submittedDate',
-      render: (row) => <span className="text-xs text-slate-400">{row.submittedDate}</span>
+      header: 'VERIFIED BY',
+      accessor: 'verifiedBy',
+      render: (row) => {
+        const isPending = (row.status || '').toLowerCase() === 'pending';
+        return (
+          <div className="text-xs flex items-center gap-1.5">
+            <ShieldCheck className={`w-3.5 h-3.5 shrink-0 ${isPending ? 'text-amber-500' : 'text-emerald-500'}`} />
+            <span className={`font-semibold ${isPending ? 'text-amber-600 dark:text-amber-400 italic' : 'text-slate-900 dark:text-white'}`}>
+              {row.verifiedBy || (isPending ? 'Pending Verification' : `${user?.name || 'Priya Narayanan'} (Pincode Admin)`)}
+            </span>
+          </div>
+        );
+      }
     },
     {
-      header: 'Status',
+      header: 'STATUS',
       accessor: 'status',
-      render: (row) => (
-        <div>
-          <StatusBadge status={row.status} />
-          {row.verifiedBy && (
-            <div className="text-[10px] text-slate-400 mt-1">By: {row.verifiedBy}</div>
-          )}
-        </div>
-      )
+      className: 'whitespace-nowrap',
+      render: (row) => <StatusBadge status={row.status || 'Approved'} />
     },
     {
-      header: 'Action',
+      header: 'ACTIONS',
       accessor: 'actions',
+      className: 'whitespace-nowrap text-center',
       render: (row) => (
         <button
-          onClick={() => setActiveRecord(row)}
-          className="px-3 py-1 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/60 border border-indigo-500/50 text-indigo-300 text-xs font-bold transition"
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedVendor(row);
+          }}
+          title="View Full Vendor Details"
+          className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:border-blue-700 transition cursor-pointer inline-flex items-center justify-center"
         >
-          Inspect & Verify
+          <Eye className="w-4 h-4" />
         </button>
       )
     }
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Page Header */}
       <div>
-        <h2 className="text-xl font-bold text-white">KYC Document Verification</h2>
-        <p className="text-xs text-slate-400">Validate official identity proof for customers, vendors, and agents.</p>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pincode KYC Compliance Desk</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Vendor identity verification clearance and local compliance review for PIN: {user?.pincode || '636001'}.
+        </p>
       </div>
 
-      <DataTable
-        title="KYC Compliance Queue"
-        subtitle="Restricted to assigned pincode applicants"
-        columns={columns}
-        data={kycRecords}
-        loading={loading}
-        onRefresh={loadData}
-        searchPlaceholder="Search applicant or document ID..."
-        exportFileName="pincode_kyc.csv"
-      />
-
-      <Modal
-        isOpen={!!activeRecord}
-        onClose={() => setActiveRecord(null)}
-        title="KYC Compliance Audit"
-      >
-        <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <div className="text-xs text-slate-400">Applicant</div>
-                <div className="font-bold text-white text-base">{activeRecord?.name}</div>
-                <div className="text-xs text-indigo-300">{activeRecord?.type} • PIN: {activeRecord?.pincode}</div>
-              </div>
-              <StatusBadge status={activeRecord?.status} />
-            </div>
-
-            <div className="pt-2 border-t border-slate-800/80 text-xs space-y-1">
-              <div><span className="text-slate-400">Document Type:</span> <span className="text-slate-200 font-semibold">{activeRecord?.docType}</span></div>
-              <div><span className="text-slate-400">Document Number:</span> <span className="font-mono text-emerald-400 font-bold">{activeRecord?.docNumber}</span></div>
-            </div>
+      {/* 4 KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {/* KPI 1: Total KYC */}
+        <div className="p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total KYC</span>
+            <FileCheck2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Verification Notes / Rejection Reason (If any)
-            </label>
-            <textarea
-              rows="3"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Add verification notes..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
-            />
+          <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">
+            {kpiStats.totalKYC.toLocaleString()}
           </div>
-
-          <div className="flex justify-between items-center pt-2">
-            <button
-              onClick={() => setActiveRecord(null)}
-              className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
-            >
-              Close
-            </button>
-            <div className="flex gap-2">
-              <button
-                disabled={submitting}
-                onClick={() => handleProcess('Rejected')}
-                className="px-4 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-800 text-xs font-bold transition flex items-center gap-1.5"
-              >
-                <XCircle className="w-3.5 h-3.5" /> Reject
-              </button>
-              <button
-                disabled={submitting}
-                onClick={() => handleProcess('Verified')}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/30"
-              >
-                <CheckCircle className="w-3.5 h-3.5" /> Approve KYC
-              </button>
-            </div>
+          <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium mt-0.5">
+            Pincode merchant roster
           </div>
         </div>
-      </Modal>
+
+        {/* KPI 2: Approved KYC */}
+        <div className="p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Approved KYC</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">
+            {kpiStats.approvedKYC.toLocaleString()}
+          </div>
+          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">
+            Clearance approved
+          </div>
+        </div>
+
+        {/* KPI 3: Pending KYC */}
+        <div className="p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending KYC</span>
+            <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">
+            {kpiStats.pendingKYC.toLocaleString()}
+          </div>
+          <div className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-0.5">
+            Awaiting verification
+          </div>
+        </div>
+
+        {/* KPI 4: Rejected KYC */}
+        <div className="p-3 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Rejected KYC</span>
+            <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+          </div>
+          <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">
+            {kpiStats.rejectedKYC.toLocaleString()}
+          </div>
+          <div className="text-[10px] text-rose-600 dark:text-rose-400 font-medium mt-0.5">
+            Documents rejected
+          </div>
+        </div>
+      </div>
+
+      {/* Main KYC Table */}
+      <DataTable
+        title="Pincode Vendor KYC Queue"
+        subtitle="Review identity documents and compliance clearance for local merchants"
+        columns={columns}
+        data={kycList}
+        loading={loading}
+        onRefresh={loadData}
+        onRowClick={(row) => setSelectedVendor(row)}
+        searchPlaceholder="Search vendor name, category, or address..."
+        exportFileName="pincode_vendor_kyc.csv"
+      />
+
+      {/* Vendor KYC Full Details Modal */}
+      <VendorKYCDetailsModal
+        isOpen={Boolean(selectedVendor)}
+        onClose={() => setSelectedVendor(null)}
+        vendor={selectedVendor}
+      />
     </div>
   );
 }

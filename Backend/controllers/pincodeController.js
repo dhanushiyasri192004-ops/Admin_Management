@@ -17,7 +17,28 @@ function getPincodes(req, res) {
       scoped = scoped.filter(p => p.status.toLowerCase() === status.toLowerCase());
     }
 
-    return res.json({ success: true, count: scoped.length, pincodes: scoped });
+    const enriched = scoped.map(p => {
+      const assigned = db.admins.find(a => a.pincode === p.pincode || (a.role === 'Pincode Admin' && a.name.includes(p.pincode)));
+      const adminName = assigned
+        ? assigned.name.replace(/\s*\(.*?\)\s*/g, '').trim()
+        : (p.assignedAdmin || 'Unassigned');
+      const adminEmail = assigned
+        ? assigned.email
+        : (p.assignedAdmin ? `${p.assignedAdmin.toLowerCase().replace(/\s+/g, '_')}_admin@admin.com` : 'admin@domain.com');
+
+      return {
+        ...p,
+        district: p.district,
+        districtName: p.district,
+        division: p.division,
+        divisionName: p.division,
+        adminName,
+        adminEmail,
+        assignedAdmin: adminName
+      };
+    });
+
+    return res.json({ success: true, count: enriched.length, pincodes: enriched });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch pincodes', error: error.message });
   }

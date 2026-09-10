@@ -44,12 +44,60 @@ export function StateAdminDashboard() {
 
   // 1. Top Summary Cards (6 compact cards)
   const topSummaryCards = [
-    { label: 'Total Districts', value: '38', icon: Building2, path: '/state-admin/districts', highlight: 'Tamil Nadu' },
-    { label: 'Total Divisions', value: '128', icon: Layers, path: '/state-admin/divisions', highlight: 'Active Zones' },
-    { label: 'Total Pincodes', value: '1,256', icon: MapPin, path: '/state-admin/pincodes', highlight: 'Micro Coverage' },
-    { label: 'Total Customers', value: '12,845', icon: Users, path: '/state-admin/customers', highlight: '+256 this mo' },
-    { label: 'Total Vendors', value: '2,365', icon: Store, path: '/state-admin/vendors', highlight: '1,842 Active' },
-    { label: 'Total Admins', value: '168', icon: ShieldCheck, path: '/state-admin/district-admins', highlight: 'Nodal Officers' }
+    {
+      label: 'Total Districts',
+      value: '38',
+      icon: Building2,
+      path: '/state-admin/districts',
+      highlight: 'Tamil Nadu',
+      badgeColor: isDark ? 'bg-blue-950/80 border-blue-800 text-blue-400' : 'bg-blue-50 border-blue-100 text-blue-600',
+      highlightColor: 'text-blue-600'
+    },
+    {
+      label: 'Total Divisions',
+      value: '128',
+      icon: Layers,
+      path: '/state-admin/divisions',
+      highlight: 'Active Zones',
+      badgeColor: isDark ? 'bg-indigo-950/80 border-indigo-800 text-indigo-400' : 'bg-indigo-50 border-indigo-100 text-indigo-600',
+      highlightColor: 'text-indigo-600'
+    },
+    {
+      label: 'Total Pincodes',
+      value: '1,256',
+      icon: MapPin,
+      path: '/state-admin/pincodes',
+      highlight: 'Micro Coverage',
+      badgeColor: isDark ? 'bg-sky-950/80 border-sky-800 text-sky-400' : 'bg-sky-50 border-sky-100 text-sky-600',
+      highlightColor: 'text-indigo-600'
+    },
+    {
+      label: 'Total Customers',
+      value: '12,845',
+      icon: Users,
+      path: '/state-admin/customers',
+      highlight: '+256 this mo',
+      badgeColor: isDark ? 'bg-sky-950/80 border-sky-800 text-sky-400' : 'bg-sky-50 border-sky-100 text-sky-600',
+      highlightColor: 'text-emerald-600'
+    },
+    {
+      label: 'Total Vendors',
+      value: '2,365',
+      icon: Store,
+      path: '/state-admin/vendors',
+      highlight: '1,842 Active',
+      badgeColor: isDark ? 'bg-amber-950/80 border-amber-800 text-amber-400' : 'bg-amber-50 border-amber-100 text-amber-600',
+      highlightColor: 'text-amber-600'
+    },
+    {
+      label: 'Total Admins',
+      value: '168',
+      icon: ShieldCheck,
+      path: '/state-admin/district-admins',
+      highlight: 'Nodal Officers',
+      badgeColor: isDark ? 'bg-purple-950/80 border-purple-800 text-purple-400' : 'bg-purple-50 border-purple-100 text-purple-600',
+      highlightColor: 'text-purple-600'
+    }
   ];
 
   // 3. Operations Overview (8 items)
@@ -117,23 +165,21 @@ export function StateAdminDashboard() {
               <div
                 key={idx}
                 onClick={() => navigate(card.path)}
-                className={`admin-card p-3.5 ${cardStyle} border rounded-2xl cursor-pointer hover:border-blue-400/60 dark:hover:border-blue-500/50 transition-all flex flex-col justify-between`}
+                className={`admin-card p-4 ${cardStyle} hover:border-blue-300 transition cursor-pointer flex flex-col justify-between`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  <span className={`text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     {card.label}
                   </span>
-                  <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400 shrink-0">
+                  <div className={`p-1.5 rounded-lg border ${card.badgeColor}`}>
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                 </div>
-                <div className="mt-2">
-                  <div className="text-xl font-extrabold text-slate-900 dark:text-white leading-tight">
-                    {card.value}
-                  </div>
-                  <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                    {card.highlight}
-                  </div>
+                <div className={`text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'} mt-2`}>
+                  {card.value}
+                </div>
+                <div className={`text-[10px] ${card.highlightColor} font-semibold mt-0.5`}>
+                  {card.highlight}
                 </div>
               </div>
             );

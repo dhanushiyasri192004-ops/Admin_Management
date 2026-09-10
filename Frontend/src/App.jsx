@@ -8,7 +8,7 @@ function AppContent() {
   const { theme, isDark } = useTheme();
 
   return (
-    <div className={`min-h-screen ${isDark ? 'dark bg-[#0b1322] text-slate-100' : 'light bg-[#f8fafc] text-slate-900'} transition-colors duration-200`}>
+    <div className={`min-h-screen ${isDark ? 'dark bg-[#0b1322] text-slate-100' : 'light bg-[#f8fafc] text-[#001D51]'} transition-colors duration-200`}>
       <AppRoutes />
     </div>
   );

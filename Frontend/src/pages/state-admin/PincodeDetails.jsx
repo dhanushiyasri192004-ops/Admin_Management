@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
   MapPin,
@@ -27,6 +27,7 @@ export function StatePincodeDetails() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const divisionFilter = searchParams.get('division');
+  const pincodeFilter = searchParams.get('pincode');
 
   const [selectedPincode, setSelectedPincode] = useState(null);
 
@@ -153,9 +154,19 @@ export function StatePincodeDetails() {
     }
   ];
 
-  const filteredPincodes = divisionFilter
-    ? pincodes.filter(p => p.division.toLowerCase() === divisionFilter.toLowerCase())
-    : pincodes;
+  const filteredPincodes = pincodes.filter(p => {
+    if (divisionFilter && p.division.toLowerCase() !== divisionFilter.toLowerCase()) return false;
+    if (pincodeFilter && p.pincode !== pincodeFilter) return false;
+    return true;
+  });
+  const displayPincodes = filteredPincodes.length > 0 ? filteredPincodes : pincodes;
+
+  useEffect(() => {
+    if (pincodeFilter) {
+      const match = pincodes.find(p => p.pincode === pincodeFilter);
+      if (match) setSelectedPincode(match);
+    }
+  }, [pincodeFilter]);
 
   const getWorkforceMetrics = (pin) => [
     { label: 'Total Managers', value: pin.totalManagers, icon: UserCog, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/50' },
@@ -184,8 +195,8 @@ export function StatePincodeDetails() {
           </p>
         </div>
 
-        {divisionFilter && (
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          {divisionFilter && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-900/50">
               <Building2 className="w-3.5 h-3.5" />
               <span>Division: {divisionFilter}</span>
@@ -198,13 +209,27 @@ export function StatePincodeDetails() {
                 <X className="w-3 h-3" />
               </button>
             </span>
-          </div>
-        )}
+          )}
+          {pincodeFilter && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-900/50">
+              <MapPin className="w-3.5 h-3.5" />
+              <span>PIN: {pincodeFilter}</span>
+              <button
+                type="button"
+                onClick={() => navigate('/state-admin/pincode-details')}
+                className="ml-1 p-0.5 hover:bg-blue-200/60 dark:hover:bg-blue-900/60 rounded-full transition cursor-pointer"
+                title="Clear filter"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* 3-column grid identical to Division and District Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredPincodes.map((pin) => (
+        {displayPincodes.map((pin) => (
           <div
             key={pin.pincode}
             className="admin-card p-5 bg-white dark:bg-[#131f37] border border-slate-200/90 dark:border-[#1f3358] shadow-sm space-y-4 rounded-2xl"

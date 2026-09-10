@@ -3,7 +3,8 @@ import { dataService } from '../../services/dataService';
 import { DataTable } from '../../components/DataTable';
 import { SearchBar } from '../../components/SearchBar';
 import { StatusBadge } from '../../components/Badge';
-import { Store, MapPin, Building, Star, CheckCircle2, Clock, IndianRupee, Filter, RefreshCw, Download, Layers } from 'lucide-react';
+import { Modal } from '../../components/Modal';
+import { Store, MapPin, Building, Star, CheckCircle2, Clock, IndianRupee, Filter, RefreshCw, Download, Layers, Plus, UserCheck } from 'lucide-react';
 
 export function StateVendors() {
   const [vendors, setVendors] = useState([]);
@@ -13,7 +14,21 @@ export function StateVendors() {
   const [kycFilter, setKycFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [ratingFilter, setRatingFilter] = useState('');
-  const [payoutFilter, setPayoutFilter] = useState('');
+
+  // Onboarding Modal State
+  const [showOnboardModal, setShowOnboardModal] = useState(false);
+  const [onboardForm, setOnboardForm] = useState({
+    name: '',
+    contactPerson: '',
+    phone: '',
+    email: '',
+    category: 'Services',
+    district: 'Salem',
+    division: 'Salem North',
+    pincode: '636001',
+    address: '',
+    assignedAgentName: 'Thirunavukkarasu R'
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -46,7 +61,7 @@ export function StateVendors() {
     };
   }, [vendors]);
 
-  // Filtered vendors list based on all 4 active filters
+  // Filtered vendors list based on active filters
   const filteredVendors = useMemo(() => {
     return vendors.filter(v => {
       // 1. KYC Status — All / Verified / Pending / Processing / Rejected
@@ -54,20 +69,14 @@ export function StateVendors() {
         return false;
       }
 
-      // 2. Vendor Category — Services, Product, Food, Stay, Travel, Daily Needs, Jobs
+      // 2. Vendor Category — Services, Product, Food, Daily Needs, Stay, Travel, Job
       if (categoryFilter) {
         const cat = (v.category || '').toLowerCase();
         const target = categoryFilter.toLowerCase();
-        // Match standard category mappings or direct keyword
-        if (target === 'services' && !cat.includes('service') && !cat.includes('electrical') && !cat.includes('hardware')) return false;
-        if (target === 'product' && !cat.includes('product') && !cat.includes('industrial') && !cat.includes('tools')) return false;
-        if (target === 'food' && !cat.includes('food') && !cat.includes('grocery') && !cat.includes('fmcg') && !cat.includes('restaurant')) return false;
-        if (target === 'stay' && !cat.includes('stay') && !cat.includes('hotel') && !cat.includes('resort') && !cat.includes('lodge')) return false;
-        if (target === 'travel' && !cat.includes('travel') && !cat.includes('transport') && !cat.includes('cab') && !cat.includes('tour')) return false;
-        if (target === 'daily needs' && !cat.includes('daily') && !cat.includes('grocery') && !cat.includes('fmcg') && !cat.includes('furnishing') && !cat.includes('home')) return false;
-        if (target === 'jobs' && !cat.includes('job') && !cat.includes('work') && !cat.includes('recruitment')) return false;
-        if (!['services', 'product', 'food', 'stay', 'travel', 'daily needs', 'jobs'].includes(target)) {
-          if (!cat.includes(target)) return false;
+        if (target === 'job' || target === 'jobs') {
+          if (!cat.includes('job') && !cat.includes('work') && !cat.includes('recruitment')) return false;
+        } else if (!cat.includes(target) && !target.includes(cat)) {
+          return false;
         }
       }
 
@@ -79,22 +88,15 @@ export function StateVendors() {
         if (ratingFilter === 'below_3' && r >= 3.0) return false;
       }
 
-      // 4. Payout Status — Paid / Pending
-      if (payoutFilter) {
-        const pendingAmt = Number(v.pendingPayout) || 0;
-        if (payoutFilter === 'Pending' && pendingAmt <= 0) return false;
-        if (payoutFilter === 'Paid' && pendingAmt > 0) return false;
-      }
-
       return true;
     });
-  }, [vendors, kycFilter, categoryFilter, ratingFilter, payoutFilter]);
+  }, [vendors, kycFilter, categoryFilter, ratingFilter]);
 
   const columns = [
     {
       header: 'Vendor Business',
       accessor: 'name',
-      className: 'w-[30%]',
+      className: 'w-[26%]',
       render: (row) => (
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400 shrink-0">
@@ -109,9 +111,33 @@ export function StateVendors() {
       )
     },
     {
+      header: 'Assigned Agents',
+      accessor: 'assignedAgent',
+      className: 'w-[20%]',
+      render: (row) => {
+        const agentName = row.assignedAgent?.name || (row.pincode === '636002' ? 'Naveen Kumar M' : 'Thirunavukkarasu R');
+        const agentPhone = row.assignedAgent?.phone || (row.pincode === '636002' ? '+91 98940 55103' : '+91 98940 55101');
+        return (
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 shrink-0">
+              <UserCheck className="w-3.5 h-3.5" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate">
+                {agentName}
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                {agentPhone}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    },
+    {
       header: 'Location',
       accessor: 'pincode',
-      className: 'w-[20%]',
+      className: 'w-[18%]',
       render: (row) => (
         <div>
           <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{row.district}, {row.division}</div>
@@ -151,22 +177,73 @@ export function StateVendors() {
       accessor: 'kycStatus',
       className: 'w-[14%]',
       render: (row) => <StatusBadge status={row.kycStatus} />
-    },
-    {
-      header: 'Pending Payout',
-      accessor: 'pendingPayout',
-      className: 'w-[14%]',
-      render: (row) => (
-        <span className="font-bold text-slate-900 dark:text-slate-200 text-xs">₹{row.pendingPayout?.toLocaleString()}</span>
-      )
     }
   ];
 
+  const handleOnboardSubmit = (e) => {
+    e.preventDefault();
+    if (!onboardForm.name || !onboardForm.contactPerson || !onboardForm.phone) {
+      alert('Please fill in business name, contact person, and phone number.');
+      return;
+    }
+
+    const newVendor = {
+      id: `VND-00${vendors.length + 1}`,
+      name: onboardForm.name,
+      contactPerson: onboardForm.contactPerson,
+      phone: onboardForm.phone,
+      email: onboardForm.email || `${onboardForm.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@vendor.com`,
+      category: onboardForm.category,
+      state: 'Tamil Nadu',
+      district: onboardForm.district,
+      division: onboardForm.division,
+      pincode: onboardForm.pincode,
+      address: onboardForm.address || `${onboardForm.district}, ${onboardForm.division}`,
+      rating: 5.0,
+      totalOrdersDelivered: 0,
+      kycStatus: 'Pending',
+      status: 'Active',
+      pendingPayout: 0,
+      assignedAgent: {
+        id: onboardForm.assignedAgentName.includes('Jayachandran') ? 'AGT-702' : onboardForm.assignedAgentName.includes('Naveen') ? 'AGT-703' : 'AGT-701',
+        name: onboardForm.assignedAgentName,
+        phone: onboardForm.assignedAgentName.includes('Jayachandran') ? '+91 98940 55102' : onboardForm.assignedAgentName.includes('Naveen') ? '+91 98940 55103' : '+91 98940 55101'
+      }
+    };
+
+    setVendors(prev => [newVendor, ...prev]);
+    setShowOnboardModal(false);
+    setOnboardForm({
+      name: '',
+      contactPerson: '',
+      phone: '',
+      email: '',
+      category: 'Services',
+      district: 'Salem',
+      division: 'Salem North',
+      pincode: '636001',
+      address: '',
+      assignedAgentName: 'Thirunavukkarasu R'
+    });
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">State Vendors Network</h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Overview of certified merchant partners under state jurisdiction.</p>
+      {/* Top Header with Title and "New Vendor Onboarding" Button at Top-Right */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">State Vendors Network</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Overview of certified merchant partners under state jurisdiction.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowOnboardModal(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/20 transition cursor-pointer self-start sm:self-auto shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          <span>New Vendor Onboarding</span>
+        </button>
       </div>
 
       {/* 4 KPI Cards in a single row, equal size and consistent styling */}
@@ -239,7 +316,7 @@ export function StateVendors() {
           <div className={`p-4 sm:p-5 border-b ${
             isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-slate-50/50'
           } flex flex-nowrap items-center justify-between gap-2.5 transition-colors`}>
-            {/* Left side: Search Bar + 4 Filter Dropdowns with equal spacing & padding */}
+            {/* Left side: Search Bar + Filter Dropdowns */}
             <div className="flex flex-nowrap items-center gap-2.5 min-w-0 flex-1">
               <SearchBar
                 value={search}
@@ -300,17 +377,17 @@ export function StateVendors() {
                   <option value="Food" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
                     Food
                   </option>
+                  <option value="Daily Needs" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
+                    Daily Needs
+                  </option>
                   <option value="Stay" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
                     Stay
                   </option>
                   <option value="Travel" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
                     Travel
                   </option>
-                  <option value="Daily Needs" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
-                    Daily Needs
-                  </option>
-                  <option value="Jobs" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
-                    Jobs
+                  <option value="Job" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
+                    Job
                   </option>
                 </select>
               </div>
@@ -340,45 +417,6 @@ export function StateVendors() {
                   </option>
                 </select>
               </div>
-
-              {/* Filter 4: Payout Status */}
-              <div className={`h-9 inline-flex items-center gap-2 ${
-                isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-              } border rounded-xl px-2.5 text-xs transition-colors shrink-0`}>
-                <IndianRupee className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <select
-                  value={payoutFilter}
-                  onChange={(e) => setPayoutFilter(e.target.value)}
-                  className={`bg-transparent border-none ${isDark ? 'text-slate-200' : 'text-slate-800'} text-xs focus:outline-none cursor-pointer pr-1 truncate`}
-                  title="Filter by Payout Status"
-                >
-                  <option value="" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
-                    Payout: All
-                  </option>
-                  <option value="Paid" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
-                    Paid
-                  </option>
-                  <option value="Pending" className={isDark ? "bg-slate-900 text-slate-200" : "bg-white text-slate-800"}>
-                    Pending
-                  </option>
-                </select>
-              </div>
-
-              {/* Reset button if any filter active */}
-              {(kycFilter || categoryFilter || ratingFilter || payoutFilter) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setKycFilter('');
-                    setCategoryFilter('');
-                    setRatingFilter('');
-                    setPayoutFilter('');
-                  }}
-                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium px-2 shrink-0"
-                >
-                  Reset
-                </button>
-              )}
             </div>
 
             {/* Right side: Refresh + Export CSV */}
@@ -415,6 +453,160 @@ export function StateVendors() {
           </div>
         )}
       />
+
+      {/* New Vendor Onboarding Modal */}
+      <Modal
+        isOpen={showOnboardModal}
+        onClose={() => setShowOnboardModal(false)}
+        title="New Vendor Onboarding"
+        maxWidth="max-w-xl"
+      >
+        <form onSubmit={handleOnboardSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Vendor Business Name *
+              </label>
+              <input
+                type="text"
+                required
+                value={onboardForm.name}
+                onChange={(e) => setOnboardForm({ ...onboardForm, name: e.target.value })}
+                placeholder="e.g. Salem Tech Spares"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Contact Person *
+              </label>
+              <input
+                type="text"
+                required
+                value={onboardForm.contactPerson}
+                onChange={(e) => setOnboardForm({ ...onboardForm, contactPerson: e.target.value })}
+                placeholder="e.g. Ramesh Kumar"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Phone Number *
+              </label>
+              <input
+                type="text"
+                required
+                value={onboardForm.phone}
+                onChange={(e) => setOnboardForm({ ...onboardForm, phone: e.target.value })}
+                placeholder="+91 94431 10005"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={onboardForm.email}
+                onChange={(e) => setOnboardForm({ ...onboardForm, email: e.target.value })}
+                placeholder="vendor@company.com"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Category *
+              </label>
+              <select
+                value={onboardForm.category}
+                onChange={(e) => setOnboardForm({ ...onboardForm, category: e.target.value })}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Services">Services</option>
+                <option value="Product">Product</option>
+                <option value="Food">Food</option>
+                <option value="Daily Needs">Daily Needs</option>
+                <option value="Stay">Stay</option>
+                <option value="Travel">Travel</option>
+                <option value="Job">Job</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Assigned Agent *
+              </label>
+              <select
+                value={onboardForm.assignedAgentName}
+                onChange={(e) => setOnboardForm({ ...onboardForm, assignedAgentName: e.target.value })}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Thirunavukkarasu R">Thirunavukkarasu R (AGT-701)</option>
+                <option value="Jayachandran Mohan">Jayachandran Mohan (AGT-702)</option>
+                <option value="Naveen Kumar M">Naveen Kumar M (AGT-703)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                District / Division
+              </label>
+              <input
+                type="text"
+                value={`${onboardForm.district}, ${onboardForm.division}`}
+                readOnly
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Pincode
+              </label>
+              <input
+                type="text"
+                value={onboardForm.pincode}
+                onChange={(e) => setOnboardForm({ ...onboardForm, pincode: e.target.value })}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Shop / Office Street Address
+            </label>
+            <input
+              type="text"
+              value={onboardForm.address}
+              onChange={(e) => setOnboardForm({ ...onboardForm, address: e.target.value })}
+              placeholder="e.g. 55, Bazaar Main Road, Fort"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setShowOnboardModal(false)}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/20 transition cursor-pointer"
+            >
+              Complete Onboarding
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

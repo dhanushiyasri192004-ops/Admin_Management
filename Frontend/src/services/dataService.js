@@ -14,6 +14,10 @@ export const dataService = {
     body: JSON.stringify({ status })
   }),
   getDivisions: () => apiRequest('/admin/divisions'),
+  updateDivisionStatus: (id, status) => apiRequest(`/admin/divisions/${encodeURIComponent(id)}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status })
+  }),
 
   // Customers & Membership
   getCustomers: (params = {}) => {
@@ -90,7 +94,15 @@ export const dataService = {
     const qs = new URLSearchParams(params).toString();
     return apiRequest(`/kyc${qs ? `?${qs}` : ''}`);
   },
+  getKYC: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return apiRequest(`/kyc${qs ? `?${qs}` : ''}`);
+  },
   processKYC: (id, data) => apiRequest(`/kyc/${id}/process`, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
+  updateKYC: (id, data) => apiRequest(`/kyc/${id}/process`, {
     method: 'PATCH',
     body: JSON.stringify(data)
   }),
@@ -115,5 +127,18 @@ export const dataService = {
   getAgents: (params = {}) => {
     const qs = new URLSearchParams(params).toString();
     return apiRequest(`/operations/agents${qs ? `?${qs}` : ''}`);
-  }
+  },
+  getAgentHierarchy: () => apiRequest('/operations/agents/hierarchy'),
+  getAgentActivities: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return apiRequest(`/operations/agents/activities${qs ? `?${qs}` : ''}`);
+  },
+  createAgentActivity: (data) => apiRequest('/operations/agents/activities', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  advanceAgentActivity: (id, data = {}) => apiRequest(`/operations/agents/activities/${id}/advance`, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  })
 };

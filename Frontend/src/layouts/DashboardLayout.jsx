@@ -14,12 +14,12 @@ export function DashboardLayout() {
   const isDashboardPage = location.pathname.endsWith('/dashboard');
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#0b1322] text-slate-100' : 'bg-[#f8fafc] text-slate-900'} flex transition-colors duration-200`}>
+    <div className={`min-h-screen ${isDark ? 'bg-[#0b1322] text-slate-100' : 'bg-[#f8fafc] text-[#001D51]'} flex transition-colors duration-200`}>
       {/* Sidebar Navigation */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-60">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 dashboard-content-area">
         {/* Header is shown strictly on dashboard page only */}
         {isDashboardPage && <Header setIsSidebarOpen={setIsSidebarOpen} />}
 
@@ -32,22 +32,22 @@ export function DashboardLayout() {
               type="button"
               onClick={() => setIsSidebarOpen(true)}
               className={`p-1.5 rounded-lg border ${
-                isDark ? 'border-slate-700 text-slate-300' : 'border-slate-200 text-slate-700'
+                isDark ? 'border-slate-700 text-slate-300' : 'border-slate-200 text-[#001D51]'
               }`}
             >
               <Menu className="w-5 h-5" />
             </button>
-            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Admin Management</span>
+            <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#001D51]'}`}>Admin Management</span>
             <div className="w-8"></div>
           </div>
         )}
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-5 lg:p-6 max-w-[1440px] w-full mx-auto space-y-6">
           <Outlet />
         </main>
 
         <footer className={`py-4 px-6 border-t ${
-          isDark ? 'border-slate-800/80 text-slate-400 bg-[#0c182b]/50' : 'border-slate-200 text-slate-500 bg-white/50'
+          isDark ? 'border-slate-800/80 text-slate-400 bg-[#0c182b]/50' : 'border-slate-200 text-[#1e355b] bg-white/50'
         } text-center text-xs transition-colors`}>
           Admin Management System &copy; {new Date().getFullYear()} • Role-Based & Location-Based Administrative Portal
         </footer>
