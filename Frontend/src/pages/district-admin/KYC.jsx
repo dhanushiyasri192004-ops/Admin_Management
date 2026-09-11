@@ -242,6 +242,7 @@ export function DistrictKYC() {
         isOpen={Boolean(selectedVendor)}
         onClose={() => setSelectedVendor(null)}
         vendor={selectedVendor}
+        onVendorUpdated={loadData}
       />
     </div>
   );

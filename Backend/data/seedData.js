@@ -410,6 +410,14 @@ const vendors = [
       upiId: 'srikrishna@okhdfcbank'
     },
     kycStatus: 'Verified',
+    addedBy: {
+      id: 'ADM-001',
+      name: 'Rajesh Sharma',
+      role: 'State Admin',
+      phone: '+91 98765 43210',
+      email: 'state_admin@admin.com',
+      addedAt: '2026-02-10'
+    },
     assignedAgent: {
       id: 'AGT-701',
       name: 'Thirunavukkarasu R',
@@ -439,6 +447,14 @@ const vendors = [
       upiId: 'salemsupermart@oksbi'
     },
     kycStatus: 'Verified',
+    addedBy: {
+      id: 'MGR-PIN-01',
+      name: 'Saravanan Muthuraj',
+      role: 'Pincode Manager',
+      phone: '+91 98409 66001',
+      email: 'saravanan.636001@forgeindia.in',
+      addedAt: '2026-02-15'
+    },
     assignedAgent: {
       id: 'AGT-702',
       name: 'Jayachandran Mohan',
@@ -468,6 +484,14 @@ const vendors = [
       upiId: 'shevapettext@icici'
     },
     kycStatus: 'Pending',
+    addedBy: {
+      id: 'AGT-PIN-01',
+      name: 'Naveen Kumar M',
+      role: 'Pincode Agent',
+      phone: '+91 98940 55103',
+      email: 'naveen.agent@gmail.com',
+      addedAt: '2026-02-20'
+    },
     assignedAgent: {
       id: 'AGT-703',
       name: 'Naveen Kumar M',
@@ -497,6 +521,14 @@ const vendors = [
       upiId: 'kovaiind@hdfcbank'
     },
     kycStatus: 'Verified',
+    addedBy: {
+      id: 'ADM-002',
+      name: 'Ananya Iyer',
+      role: 'District Admin',
+      phone: '+91 98765 43211',
+      email: 'district_admin@admin.com',
+      addedAt: '2026-02-24'
+    },
     assignedAgent: {
       id: 'AGT-701',
       name: 'Thirunavukkarasu R',

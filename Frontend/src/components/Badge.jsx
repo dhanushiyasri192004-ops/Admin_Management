@@ -74,24 +74,33 @@ export function StatusBadge({ status, className = '' }) {
   const s = status.toLowerCase();
   let colorStyles = 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
 
-  if (['active', 'delivered', 'approved', 'verified', 'resolved', 'available', 'shortlisted', 'selected', 'selected / offer', 'completed'].includes(s)) {
+  if (['active', 'delivered', 'approved', 'verified', 'resolved', 'available', 'shortlisted', 'selected', 'selected / offer', 'completed', 'kyc approved'].includes(s)) {
     colorStyles = 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-500/30';
-  } else if (['paid', 'packed', 'confirmed', 'interview scheduled', 'interview', 'reviewed'].includes(s)) {
+  } else if (['paid', 'packed', 'confirmed', 'interview scheduled', 'interview', 'reviewed', 'pincode admin approved', 'kyc pending', 'pending kyc review'].includes(s)) {
     colorStyles = 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/70 dark:text-indigo-300 dark:border-indigo-500/30';
-  } else if (['pending', 'processing', 'scheduled', 'busy', 'order placed', 'under review', 'application submitted'].includes(s)) {
+  } else if (['pending', 'processing', 'scheduled', 'busy', 'order placed', 'under review', 'application submitted', 'pending pincode admin approval', 'pending verification'].includes(s)) {
     colorStyles = 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-500/30';
   } else if (['in progress', 'shipped', 'out for delivery', 'on duty'].includes(s)) {
     colorStyles = 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-500/30';
-  } else if (['rejected', 'cancelled', 'inactive', 'urgent', 'high'].includes(s)) {
+  } else if (['rejected', 'cancelled', 'inactive', 'urgent', 'high', 'pincode admin rejected', 'kyc rejected'].includes(s)) {
     colorStyles = 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-500/30';
   } else if (['return requested', 'return approved', 'returned'].includes(s)) {
     colorStyles = 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/70 dark:text-purple-300 dark:border-purple-500/30';
   }
 
+  let displayLabel = status;
+  if (s === 'pending pincode admin approval') {
+    displayLabel = 'Pending Pincode Approval';
+  } else if (s === 'pincode admin approved') {
+    displayLabel = 'Pincode Approved';
+  } else if (s === 'pincode admin rejected') {
+    displayLabel = 'Pincode Rejected';
+  }
+
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap shrink-0 ${colorStyles} ${className}`}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-      {status}
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap shrink-0 ${colorStyles} ${className}`}>
+      <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0"></span>
+      <span>{displayLabel}</span>
     </span>
   );
 }

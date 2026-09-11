@@ -35,7 +35,17 @@ export const dataService = {
     const qs = new URLSearchParams(params).toString();
     return apiRequest(`/vendors${qs ? `?${qs}` : ''}`);
   },
+  getVendorById: (id) => apiRequest(`/vendors/${id}`),
   createVendor: (data) => apiRequest('/vendors', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  lookupPincode: (pincode) => apiRequest(`/vendors/lookup-pincode/${pincode}`),
+  pincodeVerifyVendor: (id, data) => apiRequest(`/vendors/${id}/pincode-verify`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  kycVerifyVendor: (id, data) => apiRequest(`/vendors/${id}/kyc-verify`, {
     method: 'POST',
     body: JSON.stringify(data)
   }),

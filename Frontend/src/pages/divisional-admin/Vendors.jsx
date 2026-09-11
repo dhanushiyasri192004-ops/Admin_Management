@@ -4,8 +4,25 @@ import { useAuth } from '../../context/AuthContext';
 import { dataService } from '../../services/dataService';
 import { DataTable } from '../../components/DataTable';
 import { StatusBadge } from '../../components/Badge';
-import { Modal } from '../../components/Modal';
-import { Store, MapPin, Star, Plus, UserCheck } from 'lucide-react';
+import { RegisterVendorModal } from '../../components/RegisterVendorModal';
+import { VendorDetailsModal } from '../../components/VendorDetailsModal';
+import { resolvePincodeHierarchy, resolveVendorAddedBy } from '../../utils/pincodeDirectory';
+import {
+  Store,
+  MapPin,
+  Star,
+  Plus,
+  Eye,
+  Filter,
+  RefreshCw,
+  Download,
+  Layers,
+  ShieldCheck,
+  CheckCircle2,
+  Clock,
+  IndianRupee,
+  Phone
+} from 'lucide-react';
 
 export function DivisionalVendors() {
   const { user } = useAuth();
@@ -22,20 +39,9 @@ export function DivisionalVendors() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [ratingFilter, setRatingFilter] = useState('');
 
-  // Onboarding Modal State
-  const [showOnboardModal, setShowOnboardModal] = useState(false);
-  const [onboardForm, setOnboardForm] = useState({
-    name: '',
-    contactPerson: '',
-    phone: '',
-    email: '',
-    category: 'Services',
-    district: districtName,
-    division: divisionName,
-    pincode: pincodeParam || '636001',
-    address: '',
-    assignedAgentName: 'Thirunavukkarasu R'
-  });
+  // Modals
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedVendorForDetails, setSelectedVendorForDetails] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -70,13 +76,15 @@ export function DivisionalVendors() {
   // Compute 4 KPI stats
   const kpiStats = useMemo(() => {
     const total = vendors.length;
-    const verified = vendors.filter(v => v.kycStatus === 'Verified').length;
-    const pendingKyc = vendors.filter(v => v.kycStatus === 'Pending' || v.kycStatus?.toLowerCase().includes('pending')).length;
+    const verified = vendors.filter(v => (v.kycStatus || '').toLowerCase().includes('approved') || (v.kycStatus || '').toLowerCase() === 'verified').length;
+    const pendingPincode = vendors.filter(v => (v.kycStatus || '').toLowerCase().includes('pending pincode')).length;
+    const pendingKyc = vendors.filter(v => (v.kycStatus || '').toLowerCase() === 'kyc pending' || (v.kycStatus || '').toLowerCase().includes('admin approved')).length;
     const pendingPayout = vendors.reduce((sum, v) => sum + (Number(v.pendingPayout) || 0), 0);
 
     return {
       total,
       verified,
+      pendingPincode,
       pendingKyc,
       pendingPayout
     };
@@ -85,10 +93,24 @@ export function DivisionalVendors() {
   // Filtered vendors list based on active filters
   const filteredVendors = useMemo(() => {
     return vendors.filter(v => {
-      if (kycFilter && v.kycStatus?.toLowerCase() !== kycFilter.toLowerCase()) {
-        return false;
+      // 1. KYC Status Filter
+      if (kycFilter) {
+        const k = (v.kycStatus || '').toLowerCase();
+        const target = kycFilter.toLowerCase();
+        if (target === 'approved') {
+          if (!k.includes('approved') && k !== 'verified') return false;
+        } else if (target === 'pending_pincode') {
+          if (!k.includes('pending pincode')) return false;
+        } else if (target === 'kyc_pending') {
+          if (!k.includes('kyc pending') && !k.includes('pincode admin approved')) return false;
+        } else if (target === 'rejected') {
+          if (!k.includes('rejected')) return false;
+        } else if (!k.includes(target)) {
+          return false;
+        }
       }
 
+      // 2. Vendor Category
       if (categoryFilter) {
         const cat = (v.category || '').toLowerCase();
         const target = categoryFilter.toLowerCase();
@@ -99,6 +121,7 @@ export function DivisionalVendors() {
         }
       }
 
+      // 3. Rating
       if (ratingFilter) {
         const r = Number(v.rating) || 0;
         if (ratingFilter === '4+' && r < 4.0) return false;
@@ -110,11 +133,19 @@ export function DivisionalVendors() {
     });
   }, [vendors, kycFilter, categoryFilter, ratingFilter]);
 
+  const handleVendorCreated = (newVendor) => {
+    setVendors(prev => [newVendor, ...prev]);
+  };
+
+  const handleVendorUpdated = (updatedVendor) => {
+    setVendors(prev => prev.map(v => v.id === updatedVendor.id ? updatedVendor : v));
+  };
+
   const columns = [
     {
       header: 'Vendor Business',
       accessor: 'name',
-      className: 'w-[26%]',
+      className: 'w-[20%]',
       render: (row) => (
         <div className="flex items-center gap-2 min-w-0">
           <div className="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400 shrink-0">
@@ -122,60 +153,82 @@ export function DivisionalVendors() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="font-bold text-slate-900 dark:text-white text-xs truncate" title={row.name}>{row.name}</div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={`Contact: ${row.contactPerson} • ${row.phone}`}>Contact: {row.contactPerson} &bull; {row.phone}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={`Contact: ${row.contactPerson} • ${row.phone}`}>Contact: {row.contactPerson} • {row.phone}</div>
             <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">{row.category}</div>
           </div>
         </div>
       )
     },
     {
-      header: 'Assigned Agents',
-      accessor: 'assignedAgent',
-      className: 'w-[20%]',
+      header: 'Onboarded By',
+      accessor: 'addedBy',
+      className: 'w-[21%]',
       render: (row) => {
-        const agentName = row.assignedAgent?.name || (row.pincode === '636002' ? 'Naveen Kumar M' : 'Thirunavukkarasu R');
-        const agentPhone = row.assignedAgent?.phone || (row.pincode === '636002' ? '+91 98940 55103' : '+91 98940 55101');
+        const creator = resolveVendorAddedBy(row);
+        const isAdmin = creator.role?.toLowerCase().includes('admin');
+        const isMgr = creator.role?.toLowerCase().includes('manager');
+
         return (
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 shrink-0">
-              <UserCheck className="w-3.5 h-3.5" />
+          <div className="min-w-0 text-xs space-y-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                isAdmin
+                  ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
+                  : isMgr
+                  ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                  : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+              }`}>
+                {creator.role}
+              </span>
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate" title={agentName}>
-                {agentName}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={agentPhone}>
-                {agentPhone}
-              </div>
+            <div className="font-bold text-slate-900 dark:text-slate-100 text-xs truncate" title={creator.name}>
+              {creator.name}
+            </div>
+            <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1">
+              <Phone className="w-2.5 h-2.5 shrink-0 text-slate-400" />
+              <span>{creator.phone}</span>
             </div>
           </div>
         );
       }
     },
     {
-      header: 'Location',
+      header: 'Location Hierarchy',
       accessor: 'pincode',
-      className: 'w-[18%]',
-      render: (row) => (
-        <div className="min-w-0">
-          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate" title={`${divisionName} Division`}>{divisionName} Division</div>
-          <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
-            <MapPin className="w-3 h-3 shrink-0" /> PIN: {row.pincode}
+      className: 'w-[16%]',
+      render: (row) => {
+        const resolved = resolvePincodeHierarchy(row.pincode);
+        const stateName = row.state || resolved.state;
+        const distName = row.district || resolved.district;
+        const divName = row.division || resolved.division;
+        const pin = row.pincode || resolved.pincode;
+
+        return (
+          <div className="min-w-0">
+            <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate" title={`${stateName} > ${distName} > ${divName} > ${pin}`}>
+              {distName}, {divName}
+            </div>
+            <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+              State: {stateName}
+            </div>
+            <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
+              <MapPin className="w-3 h-3 shrink-0" /> PIN: {pin}
+            </div>
           </div>
-        </div>
-      )
+        );
+      }
     },
     {
       header: 'Rating & Deliveries',
       accessor: 'rating',
-      className: 'w-[22%]',
+      className: 'w-[13%]',
       render: (row) => {
-        const isVerified = row.kycStatus === 'Verified';
+        const isVerified = (row.kycStatus || '').toLowerCase().includes('approved') || (row.kycStatus || '').toLowerCase() === 'verified';
         if (!isVerified) {
           return (
             <div className="min-w-0">
               <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">—</span>
-              <div className="text-[11px] text-slate-400 dark:text-slate-500 italic truncate" title="Not Available (Pending KYC)">Not Available (Pending KYC)</div>
+              <div className="text-[10px] text-slate-400 dark:text-slate-500 italic truncate" title="Awaiting Full KYC Verification">Pending Clearance</div>
             </div>
           );
         }
@@ -183,84 +236,60 @@ export function DivisionalVendors() {
           <div className="min-w-0">
             <div className="flex items-center gap-1 text-amber-500 dark:text-amber-400 font-bold text-xs">
               <Star className="w-3.5 h-3.5 fill-amber-400 shrink-0" />
-              <span>{row.rating} / 5.0</span>
+              <span>{row.rating || '5.0'} / 5.0</span>
             </div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{row.totalOrdersDelivered || 245} orders fulfilled</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{row.totalOrdersDelivered || 0} fulfilled</div>
           </div>
         );
       }
     },
     {
-      header: 'KYC Status',
+      header: 'KYC & Approval',
       accessor: 'kycStatus',
-      className: 'w-[14%]',
-      render: (row) => <StatusBadge status={row.kycStatus} />
+      className: 'w-[23%]',
+      render: (row) => (
+        <div className="py-0.5">
+          <StatusBadge status={row.kycStatus || 'Pending Pincode Admin Approval'} />
+        </div>
+      )
+    },
+    {
+      header: 'Actions',
+      accessor: 'id',
+      className: 'w-[7%] text-center',
+      render: (row) => (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedVendorForDetails(row);
+          }}
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+          title="View Hierarchy & KYC Details"
+        >
+          <Eye className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+          <span>View</span>
+        </button>
+      )
     }
   ];
 
-  const handleOnboardSubmit = (e) => {
-    e.preventDefault();
-    if (!onboardForm.name || !onboardForm.contactPerson || !onboardForm.phone) {
-      alert('Please fill in business name, contact person, and phone number.');
-      return;
-    }
-
-    const newVendor = {
-      id: `VND-00${vendors.length + 1}`,
-      name: onboardForm.name,
-      contactPerson: onboardForm.contactPerson,
-      phone: onboardForm.phone,
-      email: onboardForm.email || `${onboardForm.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@vendor.com`,
-      category: onboardForm.category,
-      state: 'Tamil Nadu',
-      district: districtName,
-      division: divisionName,
-      pincode: onboardForm.pincode,
-      address: onboardForm.address || `${divisionName} Division`,
-      rating: 5.0,
-      totalOrdersDelivered: 0,
-      kycStatus: 'Pending',
-      status: 'Active',
-      pendingPayout: 0,
-      assignedAgent: {
-        id: onboardForm.assignedAgentName.includes('Naveen') ? 'AGT-703' : 'AGT-701',
-        name: onboardForm.assignedAgentName,
-        phone: onboardForm.assignedAgentName.includes('Naveen') ? '+91 98940 55103' : '+91 98940 55101'
-      }
-    };
-
-    setVendors(prev => [newVendor, ...prev]);
-    setShowOnboardModal(false);
-    setOnboardForm({
-      name: '',
-      contactPerson: '',
-      phone: '',
-      email: '',
-      category: 'Services',
-      district: districtName,
-      division: divisionName,
-      pincode: pincodeParam || '636001',
-      address: '',
-      assignedAgentName: 'Thirunavukkarasu R'
-    });
-  };
-
   return (
     <div className="space-y-6">
-      {/* Top Header with Title and "New Vendor Onboarding" Button */}
+      {/* Top Header with Title and "Register Vendor" Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">Division Vendors Network</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Overview of certified merchant partners under {divisionName} division jurisdiction.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Merchant partners and commercial supply points under {divisionName} division jurisdiction.</p>
         </div>
 
         <button
           type="button"
-          onClick={() => setShowOnboardModal(true)}
+          onClick={() => setShowRegisterModal(true)}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/20 transition cursor-pointer self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>New Vendor Onboarding</span>
+          <span>Register New Vendor</span>
         </button>
       </div>
 
@@ -298,9 +327,11 @@ export function DivisionalVendors() {
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending Approvals</span>
             <div className="w-2 h-2 rounded-full bg-amber-500"></div>
           </div>
-          <div className="text-lg font-bold text-slate-900 dark:text-white mt-1.5">{kpiStats.pendingKyc}</div>
+          <div className="text-lg font-bold text-slate-900 dark:text-white mt-1.5">
+            {kpiStats.pendingPincode + kpiStats.pendingKyc}
+          </div>
           <div className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-0.5">
-            Documents awaiting review
+            {kpiStats.pendingPincode} PIN approval • {kpiStats.pendingKyc} KYC review
           </div>
         </div>
 
@@ -319,6 +350,74 @@ export function DivisionalVendors() {
         </div>
       </div>
 
+      {/* Filter Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1">
+            <Filter className="w-3.5 h-3.5 text-indigo-500" />
+            <span>Filters:</span>
+          </div>
+
+          {/* KYC Status Filter */}
+          <select
+            value={kycFilter}
+            onChange={(e) => setKycFilter(e.target.value)}
+            className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="">All Verification Status</option>
+            <option value="pending_pincode">Pending Pincode Approval</option>
+            <option value="kyc_pending">KYC Pending Review</option>
+            <option value="approved">Fully Approved / Verified</option>
+            <option value="rejected">Rejected (PIN or KYC)</option>
+          </select>
+
+          {/* Category Filter */}
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="">All Categories</option>
+            <option value="Services">Services</option>
+            <option value="Product">Product</option>
+            <option value="Food">Food</option>
+            <option value="Daily Needs">Daily Needs</option>
+            <option value="Stay">Stay</option>
+            <option value="Travel">Travel</option>
+            <option value="Job">Job</option>
+          </select>
+
+          {/* Rating Filter */}
+          <select
+            value={ratingFilter}
+            onChange={(e) => setRatingFilter(e.target.value)}
+            className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="">All Ratings</option>
+            <option value="4+">4.0 & Above ★</option>
+            <option value="3+">3.0 to 3.9 ★</option>
+            <option value="below_3">Below 3.0 ★</option>
+          </select>
+
+          {(kycFilter || categoryFilter || ratingFilter) && (
+            <button
+              onClick={() => {
+                setKycFilter('');
+                setCategoryFilter('');
+                setRatingFilter('');
+              }}
+              className="text-xs text-rose-600 dark:text-rose-400 hover:underline font-semibold ml-1 cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          )}
+        </div>
+
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Showing <span className="font-bold text-slate-900 dark:text-white">{filteredVendors.length}</span> of {vendors.length} vendors
+        </div>
+      </div>
+
       {/* Main Data Table */}
       <DataTable
         title="Division Vendors Roster"
@@ -327,109 +426,27 @@ export function DivisionalVendors() {
         data={filteredVendors}
         loading={loading}
         onRefresh={loadData}
-        searchPlaceholder="Search vendor name, category..."
+        searchPlaceholder="Search vendor name, contact person, pincode..."
         exportFileName="divisional_vendors.csv"
-        tableClassName="table-fixed w-full"
-        containerClassName="overflow-x-auto lg:overflow-x-visible scrollbar-none"
+        tableClassName="min-w-[960px] w-full"
+        containerClassName="overflow-x-auto"
       />
 
-      {/* Onboarding Modal */}
-      <Modal
-        isOpen={showOnboardModal}
-        onClose={() => setShowOnboardModal(false)}
-        title="Onboard New Merchant Partner"
-        maxWidth="max-w-xl"
-      >
-        <form onSubmit={handleOnboardSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Business Name *</label>
-              <input
-                type="text"
-                required
-                value={onboardForm.name}
-                onChange={(e) => setOnboardForm({ ...onboardForm, name: e.target.value })}
-                placeholder="e.g. Salem Tech Hub"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Contact Person *</label>
-              <input
-                type="text"
-                required
-                value={onboardForm.contactPerson}
-                onChange={(e) => setOnboardForm({ ...onboardForm, contactPerson: e.target.value })}
-                placeholder="e.g. Ramesh K"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
-              <input
-                type="tel"
-                required
-                value={onboardForm.phone}
-                onChange={(e) => setOnboardForm({ ...onboardForm, phone: e.target.value })}
-                placeholder="+91 98765 43210"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Category</label>
-              <select
-                value={onboardForm.category}
-                onChange={(e) => setOnboardForm({ ...onboardForm, category: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-              >
-                <option value="Services">Services</option>
-                <option value="Grocery">Grocery</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Jobs & Recruitment">Jobs & Recruitment</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Pincode Zone</label>
-              <select
-                value={onboardForm.pincode}
-                onChange={(e) => setOnboardForm({ ...onboardForm, pincode: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 font-mono"
-              >
-                <option value="636001">636001 (Salem Town Fort)</option>
-                <option value="636002">636002 (Shevapet & Market)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Assigned Field Agent</label>
-              <select
-                value={onboardForm.assignedAgentName}
-                onChange={(e) => setOnboardForm({ ...onboardForm, assignedAgentName: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
-              >
-                <option value="Thirunavukkarasu R">Thirunavukkarasu R (Salem Town)</option>
-                <option value="Naveen Kumar M">Naveen Kumar M (Shevapet)</option>
-              </select>
-            </div>
-          </div>
+      {/* Register Vendor Modal */}
+      <RegisterVendorModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onVendorCreated={handleVendorCreated}
+        initialPincode={pincodeParam || ''}
+      />
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={() => setShowOnboardModal(false)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition cursor-pointer"
-            >
-              Complete Onboarding
-            </button>
-          </div>
-        </form>
-      </Modal>
+      {/* Vendor Details Modal */}
+      <VendorDetailsModal
+        isOpen={!!selectedVendorForDetails}
+        onClose={() => setSelectedVendorForDetails(null)}
+        vendor={selectedVendorForDetails}
+        onVendorUpdated={handleVendorUpdated}
+      />
     </div>
   );
 }

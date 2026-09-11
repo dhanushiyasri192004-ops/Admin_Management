@@ -1,35 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { dataService } from '../../services/dataService';
 import { DataTable } from '../../components/DataTable';
 import { StatusBadge } from '../../components/Badge';
-import { Modal } from '../../components/Modal';
-import { Store, Star, Phone, Plus, MapPin, Tag, User, Mail } from 'lucide-react';
+import { RegisterVendorModal } from '../../components/RegisterVendorModal';
+import { VendorDetailsModal } from '../../components/VendorDetailsModal';
+import { resolvePincodeHierarchy, resolveVendorAddedBy } from '../../utils/pincodeDirectory';
+import {
+  Store,
+  MapPin,
+  Star,
+  Plus,
+  Eye,
+  CheckCircle2,
+  Clock,
+  IndianRupee,
+  Filter,
+  ShieldCheck,
+  Check,
+  X,
+  AlertCircle,
+  Phone
+} from 'lucide-react';
 
 export function PincodeVendors() {
   const { user } = useAuth();
-  const pincode = user?.pincode || '636001';
+  const assignedPincode = user?.pincode || '636001';
 
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
-  const [vendorForm, setVendorForm] = useState({
-    name: '',
-    contactPerson: '',
-    phone: '',
-    email: '',
-    category: 'Services',
-    address: '',
-    assignedAgentName: 'Thirunavukkarasu R'
-  });
+  // Filters
+  const [kycFilter, setKycFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+
+  // Modals
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [selectedVendorForDetails, setSelectedVendorForDetails] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
       const res = await dataService.getVendors();
-      if (res.success) setVendors(res.vendors || []);
+      if (res.success) {
+        let list = res.vendors || [];
+        // Scope to this pincode if set
+        if (assignedPincode) {
+          const scoped = list.filter(v => String(v.pincode) === String(assignedPincode));
+          if (scoped.length > 0) {
+            list = scoped;
+          }
+        }
+        setVendors(list);
+      }
     } catch (e) {
       console.error('Failed to load vendors:', e);
     } finally {
@@ -39,283 +62,343 @@ export function PincodeVendors() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [assignedPincode]);
 
-  const handleAddVendor = async (e) => {
-    e.preventDefault();
-    if (!vendorForm.name.trim() || !vendorForm.phone.trim()) return;
+  // KPI stats
+  const kpiStats = useMemo(() => {
+    const total = vendors.length;
+    const pendingMyApproval = vendors.filter(
+      v => (v.kycStatus || '').toLowerCase().includes('pending pincode') ||
+           v.kycStatus === 'Pending'
+    ).length;
+    const verified = vendors.filter(
+      v => (v.kycStatus || '').toLowerCase().includes('approved') ||
+           (v.kycStatus || '').toLowerCase() === 'verified'
+    ).length;
+    const pendingPayout = vendors.reduce((sum, v) => sum + (Number(v.pendingPayout) || 0), 0);
 
-    setSubmitting(true);
-    try {
-      const payload = {
-        ...vendorForm,
-        pincode,
-        district: user?.district || 'Salem',
-        division: user?.division || 'Salem North',
-        state: user?.state || 'Tamil Nadu'
-      };
+    return {
+      total,
+      pendingMyApproval,
+      verified,
+      pendingPayout
+    };
+  }, [vendors]);
 
-      const res = await dataService.createVendor(payload);
-      if (res.success && res.vendor) {
-        setVendors(prev => [res.vendor, ...prev]);
-      } else {
-        const fallbackVendor = {
-          id: `VND-${Date.now().toString().slice(-3)}`,
-          ...payload,
-          rating: 5.0,
-          totalOrdersDelivered: 0,
-          kycStatus: 'Pending',
-          status: 'Active',
-          pendingPayout: 0
-        };
-        setVendors(prev => [fallbackVendor, ...prev]);
+  const filteredVendors = useMemo(() => {
+    return vendors.filter(v => {
+      if (kycFilter) {
+        const k = (v.kycStatus || '').toLowerCase();
+        if (kycFilter === 'pending_me') {
+          if (!k.includes('pending pincode') && k !== 'pending') return false;
+        } else if (kycFilter === 'approved') {
+          if (!k.includes('approved') && k !== 'verified') return false;
+        } else if (kycFilter === 'kyc_pending') {
+          if (!k.includes('kyc pending') && !k.includes('pincode admin approved')) return false;
+        } else if (kycFilter === 'rejected') {
+          if (!k.includes('rejected')) return false;
+        }
       }
 
-      setShowAddModal(false);
-      setVendorForm({
-        name: '',
-        contactPerson: '',
-        phone: '',
-        email: '',
-        category: 'Services',
-        address: '',
-        assignedAgentName: 'Thirunavukkarasu R'
-      });
-    } catch (err) {
-      console.error('Failed to create vendor:', err);
-      // Client-side fallback so UI updates immediately
-      const fallbackVendor = {
-        id: `VND-${Date.now().toString().slice(-3)}`,
-        ...vendorForm,
-        pincode,
-        district: user?.district || 'Salem',
-        division: user?.division || 'Salem North',
-        state: user?.state || 'Tamil Nadu',
-        rating: 5.0,
-        totalOrdersDelivered: 0,
-        kycStatus: 'Pending',
-        status: 'Active',
-        pendingPayout: 0
-      };
-      setVendors(prev => [fallbackVendor, ...prev]);
-      setShowAddModal(false);
-    } finally {
-      setSubmitting(false);
-    }
+      if (categoryFilter) {
+        if ((v.category || '').toLowerCase() !== categoryFilter.toLowerCase()) return false;
+      }
+
+      return true;
+    });
+  }, [vendors, kycFilter, categoryFilter]);
+
+  const handleVendorCreated = (newVendor) => {
+    setVendors(prev => [newVendor, ...prev]);
+  };
+
+  const handleVendorUpdated = (updatedVendor) => {
+    setVendors(prev => prev.map(v => v.id === updatedVendor.id ? updatedVendor : v));
   };
 
   const columns = [
     {
-      header: 'Vendor Details',
+      header: 'Vendor Business',
       accessor: 'name',
+      className: 'w-[22%]',
       render: (row) => (
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400 shrink-0">
-            <Store className="w-5 h-5" />
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400 shrink-0">
+            <Store className="w-4 h-4" />
           </div>
-          <div>
-            <div className="font-bold text-slate-900 dark:text-white text-sm">{row.name}</div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400">Person: {row.contactPerson || row.name}</div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
-              <Phone className="w-3 h-3 text-slate-400" />
-              {row.phone}
+          <div className="min-w-0 flex-1">
+            <div className="font-bold text-slate-900 dark:text-white text-xs truncate" title={row.name}>{row.name}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={`Contact: ${row.contactPerson} • ${row.phone}`}>
+              {row.contactPerson} &bull; {row.phone}
+            </div>
+            <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">{row.category}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Onboarded By',
+      accessor: 'addedBy',
+      className: 'w-[22%]',
+      render: (row) => {
+        const creator = resolveVendorAddedBy(row);
+        const isAdmin = creator.role?.toLowerCase().includes('admin');
+        const isMgr = creator.role?.toLowerCase().includes('manager');
+
+        return (
+          <div className="min-w-0 text-xs space-y-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                isAdmin
+                  ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800'
+                  : isMgr
+                  ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                  : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+              }`}>
+                {creator.role}
+              </span>
+            </div>
+            <div className="font-bold text-slate-800 dark:text-slate-100 text-xs truncate" title={creator.name}>
+              {creator.name}
+            </div>
+            <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1">
+              <Phone className="w-2.5 h-2.5 shrink-0 text-slate-400" />
+              <span>{creator.phone}</span>
             </div>
           </div>
-        </div>
-      )
+        );
+      }
     },
     {
-      header: 'Category & Address',
-      accessor: 'category',
-      render: (row) => (
-        <div>
-          <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-300">{row.category}</span>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{row.address}</div>
-        </div>
-      )
-    },
-    {
-      header: 'Rating & Deliveries',
-      accessor: 'rating',
-      render: (row) => (
-        <div>
-          <div className="flex items-center gap-1 text-amber-500 dark:text-amber-400 font-bold text-xs">
-            <Star className="w-3.5 h-3.5 fill-amber-400" />
-            <span>{row.rating || 5.0} / 5.0</span>
+      header: 'Location Hierarchy',
+      accessor: 'pincode',
+      className: 'w-[18%]',
+      render: (row) => {
+        const resolved = resolvePincodeHierarchy(row.pincode);
+        const stateName = row.state || resolved.state;
+        const distName = row.district || resolved.district;
+        const divName = row.division || resolved.division;
+        const pin = row.pincode || resolved.pincode;
+
+        return (
+          <div className="min-w-0">
+            <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate" title={`${stateName} > ${distName} > ${divName} > ${pin}`}>
+              {distName}, {divName}
+            </div>
+            <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+              State: {stateName}
+            </div>
+            <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
+              <MapPin className="w-3 h-3 shrink-0" /> PIN: {pin}
+            </div>
           </div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400">{row.totalOrdersDelivered || 0} orders fulfilled</div>
-        </div>
-      )
+        );
+      }
     },
     {
-      header: 'KYC Status',
+      header: 'Stage 1 Verification',
       accessor: 'kycStatus',
-      render: (row) => <StatusBadge status={row.kycStatus || 'Pending'} />
+      className: 'w-[22%]',
+      render: (row) => {
+        const isPendingMyApproval = (row.kycStatus || '').toLowerCase().includes('pending pincode') || row.kycStatus === 'Pending';
+        if (isPendingMyApproval) {
+          return (
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedVendorForDetails(row);
+                }}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Action Required</span>
+              </button>
+            </div>
+          );
+        }
+
+        return (
+          <div className="py-0.5">
+            <StatusBadge status={row.kycStatus || 'Pending Pincode Admin Approval'} />
+          </div>
+        );
+      }
     },
     {
-      header: 'Pending Payout',
-      accessor: 'pendingPayout',
-      render: (row) => <span className="font-bold text-slate-900 dark:text-slate-200">₹{(row.pendingPayout || 0).toLocaleString()}</span>
+      header: 'Actions',
+      accessor: 'id',
+      className: 'w-[16%] text-center',
+      render: (row) => (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedVendorForDetails(row);
+          }}
+          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+        >
+          <Eye className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+          <span>Review Details</span>
+        </button>
+      )
     }
   ];
 
   return (
     <div className="space-y-6">
-      {/* Top Header with Add Vendor Button in Top-Right */}
+      {/* Top Header with Title and "Register Vendor" Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pincode Vendors</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">All local verified merchant shops in your assigned Pincode.</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pincode Vendors Directory</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Local merchant partners under Pincode <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{assignedPincode}</span> jurisdiction.
+          </p>
         </div>
 
         <button
           type="button"
-          onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/20 transition cursor-pointer self-start sm:self-auto shrink-0"
+          onClick={() => setShowRegisterModal(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/20 transition cursor-pointer self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Vendor</span>
+          <span>Register New Vendor</span>
         </button>
+      </div>
+
+      {/* 4 KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Merchants</span>
+            <Store className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <div className="text-lg font-bold text-slate-900 dark:text-white mt-1.5">{kpiStats.total}</div>
+          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">
+            Pincode {assignedPincode}
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Awaiting My Approval</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></div>
+          </div>
+          <div className="text-lg font-bold text-amber-600 dark:text-amber-400 mt-1.5">{kpiStats.pendingMyApproval}</div>
+          <div className="text-[10px] text-amber-600 dark:text-amber-400 font-medium mt-0.5">
+            Stage 1 verification pending
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Fully KYC Certified</span>
+            <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+              ✓
+            </div>
+          </div>
+          <div className="text-lg font-bold text-slate-900 dark:text-white mt-1.5">{kpiStats.verified}</div>
+          <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium mt-0.5">
+            Stage 2 KYC completed
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending Payout</span>
+            <div className="text-xs font-bold text-purple-600 dark:text-purple-400">₹</div>
+          </div>
+          <div className="text-lg font-bold text-slate-900 dark:text-white mt-1.5">
+            ₹{kpiStats.pendingPayout.toLocaleString()}
+          </div>
+          <div className="text-[10px] text-purple-600 dark:text-purple-400 font-medium mt-0.5">
+            Payable settlements
+          </div>
+        </div>
+      </div>
+
+      {/* Filter toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1">
+            <Filter className="w-3.5 h-3.5 text-indigo-500" />
+            <span>Filters:</span>
+          </div>
+
+          <select
+            value={kycFilter}
+            onChange={(e) => setKycFilter(e.target.value)}
+            className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="">All Verification Status</option>
+            <option value="pending_me">⚡ Needs My (Pincode Admin) Approval</option>
+            <option value="kyc_pending">KYC Pending Review</option>
+            <option value="approved">Fully Approved / Certified</option>
+            <option value="rejected">Rejected</option>
+          </select>
+
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 cursor-pointer"
+          >
+            <option value="">All Categories</option>
+            <option value="Services">Services</option>
+            <option value="Product">Product</option>
+            <option value="Food">Food</option>
+            <option value="Daily Needs">Daily Needs</option>
+            <option value="Stay">Stay</option>
+            <option value="Travel">Travel</option>
+            <option value="Job">Job</option>
+          </select>
+
+          {(kycFilter || categoryFilter) && (
+            <button
+              onClick={() => {
+                setKycFilter('');
+                setCategoryFilter('');
+              }}
+              className="text-xs text-rose-600 dark:text-rose-400 hover:underline font-semibold ml-1 cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          )}
+        </div>
+
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Showing <span className="font-bold text-slate-900 dark:text-white">{filteredVendors.length}</span> of {vendors.length} vendors
+        </div>
       </div>
 
       <DataTable
         title="Local Merchants Roster"
-        subtitle="Restricted to assigned pincode"
+        subtitle="Restricted to assigned pincode hierarchy"
         columns={columns}
-        data={vendors}
+        data={filteredVendors}
         loading={loading}
         onRefresh={loadData}
-        searchPlaceholder="Search vendors..."
+        searchPlaceholder="Search vendor name, category..."
         exportFileName="pincode_vendors.csv"
+        tableClassName="min-w-[960px] w-full"
+        containerClassName="overflow-x-auto"
       />
 
-      {/* Add Vendor Modal */}
-      <Modal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Add New Pincode Vendor"
-      >
-        <form onSubmit={handleAddVendor} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Business / Shop Name *
-              </label>
-              <input
-                type="text"
-                required
-                value={vendorForm.name}
-                onChange={(e) => setVendorForm({ ...vendorForm, name: e.target.value })}
-                placeholder="e.g. Salem Spares & Electricals"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+      {/* Register Vendor Modal */}
+      <RegisterVendorModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        onVendorCreated={handleVendorCreated}
+        defaultPincode={assignedPincode}
+      />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Contact Person / Owner *
-              </label>
-              <input
-                type="text"
-                required
-                value={vendorForm.contactPerson}
-                onChange={(e) => setVendorForm({ ...vendorForm, contactPerson: e.target.value })}
-                placeholder="e.g. Ramesh Kumar"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Phone Number *
-              </label>
-              <input
-                type="text"
-                required
-                value={vendorForm.phone}
-                onChange={(e) => setVendorForm({ ...vendorForm, phone: e.target.value })}
-                placeholder="+91 94431 10005"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={vendorForm.email}
-                onChange={(e) => setVendorForm({ ...vendorForm, email: e.target.value })}
-                placeholder="vendor@company.com"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Category *
-              </label>
-              <select
-                value={vendorForm.category}
-                onChange={(e) => setVendorForm({ ...vendorForm, category: e.target.value })}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Services">Services</option>
-                <option value="Product">Product</option>
-                <option value="Food">Food</option>
-                <option value="Daily Needs">Daily Needs</option>
-                <option value="Stay">Stay</option>
-                <option value="Travel">Travel</option>
-                <option value="Job">Job</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Assigned Pincode
-              </label>
-              <input
-                type="text"
-                readOnly
-                value={pincode}
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono font-bold focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Shop / Office Street Address *
-            </label>
-            <input
-              type="text"
-              required
-              value={vendorForm.address}
-              onChange={(e) => setVendorForm({ ...vendorForm, address: e.target.value })}
-              placeholder="e.g. 42, Bazaar Street, Fort"
-              className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={() => setShowAddModal(false)}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md shadow-blue-600/20 transition cursor-pointer disabled:opacity-50"
-            >
-              {submitting ? 'Adding...' : 'Add Vendor'}
-            </button>
-          </div>
-        </form>
-      </Modal>
+      {/* Vendor Details Modal (Includes Stage 1 Accept / Reject with mandatory reason) */}
+      <VendorDetailsModal
+        isOpen={!!selectedVendorForDetails}
+        onClose={() => setSelectedVendorForDetails(null)}
+        vendor={selectedVendorForDetails}
+        onVendorUpdated={handleVendorUpdated}
+      />
     </div>
   );
 }

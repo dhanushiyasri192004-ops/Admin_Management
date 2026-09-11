@@ -240,6 +240,7 @@ export function StateKYC() {
         isOpen={Boolean(selectedVendor)}
         onClose={() => setSelectedVendor(null)}
         vendor={selectedVendor}
+        onVendorUpdated={loadData}
       />
     </div>
   );

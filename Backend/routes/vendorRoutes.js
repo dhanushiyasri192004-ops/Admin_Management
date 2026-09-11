@@ -9,6 +9,9 @@ router.use(locationMiddleware);
 
 router.get('/', vendorController.getVendors);
 router.post('/', vendorController.createVendor);
+router.get('/lookup-pincode/:pincode', vendorController.lookupPincode);
 router.get('/:id', vendorController.getVendorById);
+router.post('/:id/pincode-verify', vendorController.pincodeAdminVerifyVendor);
+router.post('/:id/kyc-verify', vendorController.kycVerifyVendor);
 
 module.exports = router;
