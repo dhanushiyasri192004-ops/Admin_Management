@@ -24,6 +24,7 @@ import { StatePincodeDetails } from '../pages/state-admin/PincodeDetails';
 import { StateCustomers } from '../pages/state-admin/Customers';
 import { StateMembershipCards } from '../pages/state-admin/MembershipCards';
 import { StateVendors } from '../pages/state-admin/Vendors';
+import { StateVendorSubscriptions } from '../pages/state-admin/VendorSubscriptions';
 import { StateVendorPayments } from '../pages/state-admin/VendorPayments';
 import { StateOrders } from '../pages/state-admin/Orders';
 import { StateBookings } from '../pages/state-admin/Bookings';
@@ -37,6 +38,7 @@ import { StateAgentPayments } from '../pages/state-admin/AgentPayments';
 import { StatePayments } from '../pages/state-admin/Payments';
 import { StateReports } from '../pages/state-admin/Reports';
 import { StateKYC } from '../pages/state-admin/KYC';
+import { StateQualityCheck } from '../pages/state-admin/QualityCheck';
 import { StateSupportTeam } from '../pages/state-admin/SupportTeam';
 import { StateProfile } from '../pages/state-admin/Profile';
 import { StateSettings } from '../pages/state-admin/Settings';
@@ -55,6 +57,7 @@ import { DistrictPincodeDetails } from '../pages/district-admin/PincodeDetails';
 import { DistrictCustomers } from '../pages/district-admin/Customers';
 import { DistrictMembershipCards } from '../pages/district-admin/MembershipCards';
 import { DistrictVendors } from '../pages/district-admin/Vendors';
+import { DistrictVendorSubscriptions } from '../pages/district-admin/VendorSubscriptions';
 import { DistrictVendorPayments } from '../pages/district-admin/VendorPayments';
 import { DistrictOrders } from '../pages/district-admin/Orders';
 import { DistrictBookings } from '../pages/district-admin/Bookings';
@@ -66,6 +69,7 @@ import { DistrictSupportTeam } from '../pages/district-admin/SupportTeam';
 import { DistrictAgents } from '../pages/district-admin/Agents';
 import { DistrictAgentPayments } from '../pages/district-admin/AgentPayments';
 import { DistrictKYC } from '../pages/district-admin/KYC';
+import { DistrictQualityCheck } from '../pages/district-admin/QualityCheck';
 import { DistrictReports } from '../pages/district-admin/Reports';
 import { DistrictPayments } from '../pages/district-admin/Payments';
 import { DistrictTasks } from '../pages/district-admin/Tasks';
@@ -82,6 +86,7 @@ import { DivisionalPincodeDetails } from '../pages/divisional-admin/PincodeDetai
 import { DivisionalCustomers } from '../pages/divisional-admin/Customers';
 import { DivisionalMembershipCards } from '../pages/divisional-admin/MembershipCards';
 import { DivisionalVendors } from '../pages/divisional-admin/Vendors';
+import { DivisionalVendorSubscriptions } from '../pages/divisional-admin/VendorSubscriptions';
 import { DivisionalVendorPayments } from '../pages/divisional-admin/VendorPayments';
 import { DivisionalOrders } from '../pages/divisional-admin/Orders';
 import { DivisionalBookings } from '../pages/divisional-admin/Bookings';
@@ -93,6 +98,7 @@ import { DivisionalSupportTeam } from '../pages/divisional-admin/SupportTeam';
 import { DivisionalAgents } from '../pages/divisional-admin/Agents';
 import { DivisionalAgentPayments } from '../pages/divisional-admin/AgentPayments';
 import { DivisionalKYC } from '../pages/divisional-admin/KYC';
+import { DivisionalQualityCheck } from '../pages/divisional-admin/QualityCheck';
 import { DivisionalReports } from '../pages/divisional-admin/Reports';
 import { DivisionalPayments } from '../pages/divisional-admin/Payments';
 import { DivisionalTasks } from '../pages/divisional-admin/Tasks';
@@ -119,9 +125,12 @@ import { PincodeSupportTeam } from '../pages/pincode-admin/SupportTeam';
 import { PincodeAgents } from '../pages/pincode-admin/Agents';
 import { PincodeAgentPayments } from '../pages/pincode-admin/AgentPayments';
 import { PincodeKYC } from '../pages/pincode-admin/KYC';
+import { PincodeQualityCheck } from '../pages/pincode-admin/QualityCheck';
 import { PincodeBusinessReports } from '../pages/pincode-admin/BusinessReports';
 import { PincodeManager } from '../pages/pincode-admin/PincodeManager';
 import { PincodePayments } from '../pages/pincode-admin/Payments';
+import { PincodeTasks } from '../pages/pincode-admin/Tasks';
+import { PincodeQueries } from '../pages/pincode-admin/Queries';
 import { PincodeProfile } from '../pages/pincode-admin/Profile';
 import { PincodeSettings } from '../pages/pincode-admin/Settings';
 
@@ -157,6 +166,7 @@ export function AppRoutes() {
             <Route path="/state-admin/customers" element={<StateCustomers />} />
             <Route path="/state-admin/membership-cards" element={<StateMembershipCards />} />
             <Route path="/state-admin/vendors" element={<StateVendors />} />
+            <Route path="/state-admin/vendor-subscriptions" element={<StateVendorSubscriptions />} />
             <Route path="/state-admin/vendor-payments" element={<StateVendorPayments />} />
             <Route path="/state-admin/orders" element={<StateOrders />} />
             <Route path="/state-admin/bookings" element={<StateBookings />} />
@@ -177,6 +187,7 @@ export function AppRoutes() {
             <Route path="/state-admin/agents/pincode" element={<StateAgents level="pincode" />} />
             <Route path="/state-admin/agent-payments" element={<StateAgentPayments />} />
             <Route path="/state-admin/kyc" element={<StateKYC />} />
+            <Route path="/state-admin/quality-check" element={<StateQualityCheck />} />
             <Route path="/state-admin/payments" element={<StatePayments />} />
             <Route path="/state-admin/reports" element={<StateReports />} />
             <Route path="/state-admin/tasks" element={<StateTasks />} />
@@ -198,6 +209,7 @@ export function AppRoutes() {
             <Route path="/district-admin/customers" element={<DistrictCustomers />} />
             <Route path="/district-admin/membership-cards" element={<DistrictMembershipCards />} />
             <Route path="/district-admin/vendors" element={<DistrictVendors />} />
+            <Route path="/district-admin/vendor-subscriptions" element={<DistrictVendorSubscriptions />} />
             <Route path="/district-admin/vendor-payments" element={<DistrictVendorPayments />} />
             <Route path="/district-admin/orders" element={<DistrictOrders />} />
             <Route path="/district-admin/bookings" element={<DistrictBookings />} />
@@ -216,6 +228,7 @@ export function AppRoutes() {
             <Route path="/district-admin/agents/pincode" element={<DistrictAgents level="pincode" />} />
             <Route path="/district-admin/agent-payments" element={<DistrictAgentPayments />} />
             <Route path="/district-admin/kyc" element={<DistrictKYC />} />
+            <Route path="/district-admin/quality-check" element={<DistrictQualityCheck />} />
             <Route path="/district-admin/reports" element={<DistrictReports />} />
             <Route path="/district-admin/payments" element={<DistrictPayments />} />
             <Route path="/district-admin/tasks" element={<DistrictTasks />} />
@@ -241,6 +254,7 @@ export function AppRoutes() {
             <Route path="/divisional-admin/customers" element={<DivisionalCustomers />} />
             <Route path="/divisional-admin/membership-cards" element={<DivisionalMembershipCards />} />
             <Route path="/divisional-admin/vendors" element={<DivisionalVendors />} />
+            <Route path="/divisional-admin/vendor-subscriptions" element={<DivisionalVendorSubscriptions />} />
             <Route path="/divisional-admin/vendor-payments" element={<DivisionalVendorPayments />} />
             <Route path="/divisional-admin/orders" element={<DivisionalOrders />} />
             <Route path="/divisional-admin/bookings" element={<DivisionalBookings />} />
@@ -250,6 +264,7 @@ export function AppRoutes() {
             <Route path="/divisional-admin/executives" element={<DivisionalExecutives />} />
             <Route path="/divisional-admin/support-team" element={<DivisionalSupportTeam />} />
             <Route path="/divisional-admin/kyc" element={<DivisionalKYC />} />
+            <Route path="/divisional-admin/quality-check" element={<DivisionalQualityCheck />} />
             <Route path="/divisional-admin/payments" element={<DivisionalPayments />} />
             <Route path="/divisional-admin/reports" element={<DivisionalReports />} />
             <Route path="/divisional-admin/tasks" element={<DivisionalTasks />} />
@@ -278,9 +293,12 @@ export function AppRoutes() {
             <Route path="/pincode-admin/agents" element={<PincodeAgents />} />
             <Route path="/pincode-admin/agent-payments" element={<PincodeAgentPayments />} />
             <Route path="/pincode-admin/kyc" element={<PincodeKYC />} />
+            <Route path="/pincode-admin/quality-check" element={<PincodeQualityCheck />} />
             <Route path="/pincode-admin/business-reports" element={<PincodeBusinessReports />} />
             <Route path="/pincode-admin/pincode-manager" element={<PincodeManager />} />
             <Route path="/pincode-admin/payments" element={<PincodePayments />} />
+            <Route path="/pincode-admin/tasks" element={<PincodeTasks />} />
+            <Route path="/pincode-admin/queries" element={<PincodeQueries />} />
             <Route path="/pincode-admin/profile" element={<PincodeProfile />} />
             <Route path="/pincode-admin/settings" element={<PincodeSettings />} />
           </Route>

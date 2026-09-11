@@ -19,7 +19,10 @@ export function DataTable({
   customHeader = null,
   exportFileName = 'export.csv',
   itemsPerPage = 8,
-  onRowClick = null
+  onRowClick = null,
+  tableClassName = '',
+  containerClassName = '',
+  cellClassName = ''
 }) {
   const { isDark } = useTheme();
   const [search, setSearch] = useState('');
@@ -175,14 +178,14 @@ export function DataTable({
       )}
 
       {/* Table Body */}
-      <div className="overflow-x-auto">
-        <table className={`w-full text-left text-xs ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
+      <div className={`overflow-x-auto ${containerClassName || ''}`}>
+        <table className={`w-full text-left text-xs ${isDark ? 'text-slate-300' : 'text-slate-800'} ${tableClassName || ''}`}>
           <thead className={`${
             isDark ? 'bg-slate-950/60 text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-200'
           } uppercase tracking-wider text-[11px] border-b transition-colors`}>
             <tr>
               {columns.map((col, idx) => (
-                <th key={idx} className={`px-3.5 sm:px-4 py-3 font-semibold ${col.className || ''}`}>
+                <th key={idx} className={`${cellClassName || 'px-3.5 sm:px-4 py-3 sm:py-3.5'} font-bold ${col.className || ''}`}>
                   {col.header}
                 </th>
               ))}
@@ -193,7 +196,7 @@ export function DataTable({
               Array.from({ length: 4 }).map((_, rIdx) => (
                 <tr key={rIdx} className="animate-pulse">
                   {columns.map((_, cIdx) => (
-                    <td key={cIdx} className="px-3.5 sm:px-4 py-3">
+                    <td key={cIdx} className={`${cellClassName || 'px-3.5 sm:px-4 py-3 sm:py-3.5'}`}>
                       <div className={`h-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'} rounded w-3/4`}></div>
                     </td>
                   ))}
@@ -216,7 +219,7 @@ export function DataTable({
                   className={`${isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'} ${onRowClick ? 'cursor-pointer' : ''} transition-colors`}
                 >
                   {columns.map((col, colIdx) => (
-                    <td key={colIdx} className={`px-3.5 sm:px-4 py-3 align-middle ${col.className || ''}`}>
+                    <td key={colIdx} className={`${cellClassName || 'px-3.5 sm:px-4 py-3 sm:py-3.5'} align-middle ${col.className || ''}`}>
                       {col.render ? col.render(row) : (
                         typeof col.accessor === 'function' ? col.accessor(row) : row[col.accessor]
                       )}

@@ -12,6 +12,7 @@ const jobRoutes = require('./routes/jobRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const kycRoutes = require('./routes/kycRoutes');
+const qualityRoutes = require('./routes/qualityRoutes');
 const pincodeRoutes = require('./routes/pincodeRoutes');
 const executiveRoutes = require('./routes/executiveRoutes');
 
@@ -34,6 +35,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/kyc', kycRoutes);
+app.use('/api/quality', qualityRoutes);
 app.use('/api/pincodes', pincodeRoutes);
 app.use('/api/operations', executiveRoutes);
 

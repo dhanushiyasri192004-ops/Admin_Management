@@ -116,13 +116,13 @@ export function DivisionalVendors() {
       accessor: 'name',
       className: 'w-[26%]',
       render: (row) => (
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/40 text-amber-600 dark:text-amber-400 shrink-0">
             <Store className="w-4 h-4" />
           </div>
-          <div className="min-w-0">
-            <div className="font-bold text-slate-900 dark:text-white text-xs truncate">{row.name}</div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">Contact: {row.contactPerson} &bull; {row.phone}</div>
+          <div className="min-w-0 flex-1">
+            <div className="font-bold text-slate-900 dark:text-white text-xs truncate" title={row.name}>{row.name}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={`Contact: ${row.contactPerson} • ${row.phone}`}>Contact: {row.contactPerson} &bull; {row.phone}</div>
             <div className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">{row.category}</div>
           </div>
         </div>
@@ -140,11 +140,11 @@ export function DivisionalVendors() {
             <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 shrink-0">
               <UserCheck className="w-3.5 h-3.5" />
             </div>
-            <div className="min-w-0">
-              <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate">
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate" title={agentName}>
                 {agentName}
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={agentPhone}>
                 {agentPhone}
               </div>
             </div>
@@ -157,8 +157,8 @@ export function DivisionalVendors() {
       accessor: 'pincode',
       className: 'w-[18%]',
       render: (row) => (
-        <div>
-          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{divisionName} Division</div>
+        <div className="min-w-0">
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate" title={`${divisionName} Division`}>{divisionName} Division</div>
           <div className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
             <MapPin className="w-3 h-3 shrink-0" /> PIN: {row.pincode}
           </div>
@@ -173,14 +173,14 @@ export function DivisionalVendors() {
         const isVerified = row.kycStatus === 'Verified';
         if (!isVerified) {
           return (
-            <div>
+            <div className="min-w-0">
               <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">—</span>
-              <div className="text-[11px] text-slate-400 dark:text-slate-500 italic">Not Available (Pending KYC)</div>
+              <div className="text-[11px] text-slate-400 dark:text-slate-500 italic truncate" title="Not Available (Pending KYC)">Not Available (Pending KYC)</div>
             </div>
           );
         }
         return (
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-1 text-amber-500 dark:text-amber-400 font-bold text-xs">
               <Star className="w-3.5 h-3.5 fill-amber-400 shrink-0" />
               <span>{row.rating} / 5.0</span>
@@ -329,6 +329,8 @@ export function DivisionalVendors() {
         onRefresh={loadData}
         searchPlaceholder="Search vendor name, category..."
         exportFileName="divisional_vendors.csv"
+        tableClassName="table-fixed w-full"
+        containerClassName="overflow-x-auto lg:overflow-x-visible scrollbar-none"
       />
 
       {/* Onboarding Modal */}

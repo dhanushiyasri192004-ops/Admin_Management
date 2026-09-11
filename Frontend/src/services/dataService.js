@@ -35,6 +35,10 @@ export const dataService = {
     const qs = new URLSearchParams(params).toString();
     return apiRequest(`/vendors${qs ? `?${qs}` : ''}`);
   },
+  createVendor: (data) => apiRequest('/vendors', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
 
   // Orders & Bookings
   getOrders: (params = {}) => {
@@ -106,6 +110,13 @@ export const dataService = {
     method: 'PATCH',
     body: JSON.stringify(data)
   }),
+
+  // Quality Check (View Only from Existing Quality Check Module)
+  getQualityChecks: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return apiRequest(`/quality${qs ? `?${qs}` : ''}`);
+  },
+  getQualityCheckById: (id) => apiRequest(`/quality/${id}`),
 
   // Pincode Manager
   getPincodes: (params = {}) => {

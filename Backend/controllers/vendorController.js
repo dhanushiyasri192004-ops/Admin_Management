@@ -45,7 +45,42 @@ function getVendorById(req, res) {
   }
 }
 
+function createVendor(req, res) {
+  try {
+    const data = req.body;
+    const newVendor = {
+      id: `VND-${String(db.vendors.length + 1).padStart(3, '0')}`,
+      name: data.name,
+      contactPerson: data.contactPerson || data.name,
+      phone: data.phone,
+      email: data.email || `${(data.name || 'vendor').toLowerCase().replace(/[^a-z0-9]/g, '')}@vendor.com`,
+      category: data.category || 'Services',
+      state: data.state || req.user.state || 'Tamil Nadu',
+      district: data.district || req.user.district || 'Salem',
+      division: data.division || req.user.division || 'Salem North',
+      pincode: data.pincode || req.user.pincode || '636001',
+      address: data.address || `${req.user.pincode || '636001'} Market Area`,
+      rating: 5.0,
+      totalOrdersDelivered: 0,
+      kycStatus: 'Pending',
+      status: 'Active',
+      pendingPayout: 0,
+      assignedAgent: data.assignedAgent || {
+        id: 'AGT-701',
+        name: data.assignedAgentName || 'Thirunavukkarasu R',
+        phone: '+91 94431 00001'
+      }
+    };
+
+    db.vendors.unshift(newVendor);
+    return res.status(201).json({ success: true, vendor: newVendor });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to create vendor', error: error.message });
+  }
+}
+
 module.exports = {
   getVendors,
-  getVendorById
+  getVendorById,
+  createVendor
 };

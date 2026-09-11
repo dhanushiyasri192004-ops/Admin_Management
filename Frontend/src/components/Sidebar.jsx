@@ -31,7 +31,8 @@ import {
   Truck,
   ClipboardList,
   CircleHelp,
-  Receipt
+  Receipt,
+  ClipboardCheck
 } from 'lucide-react';
 
 export function Sidebar({ isOpen, setIsOpen }) {
@@ -104,6 +105,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: 'Vendors',
         items: [
           { name: 'Vendors', path: '/state-admin/vendors', icon: Store },
+          { name: 'Vendor Subscription', path: '/state-admin/vendor-subscriptions', icon: Receipt },
           { name: 'Vendor Payment Status', path: '/state-admin/vendor-payments', icon: IndianRupee },
         ]
       },
@@ -123,6 +125,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: 'Finance & Compliance',
         items: [
           { name: 'KYC', path: '/state-admin/kyc', icon: FileCheck2 },
+          { name: 'Quality Check', path: '/state-admin/quality-check', icon: ClipboardCheck },
           { name: 'Payments', path: '/state-admin/payments', icon: IndianRupee },
           { name: 'Business Reports', path: '/state-admin/reports', icon: BarChart3 },
           { name: 'Tasks', path: '/state-admin/tasks', icon: ClipboardList },
@@ -187,6 +190,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: 'Vendors',
         items: [
           { name: 'Vendors', path: '/district-admin/vendors', icon: Store },
+          { name: 'Vendor Subscription', path: '/district-admin/vendor-subscriptions', icon: Receipt },
           { name: 'Vendor Payment Status', path: '/district-admin/vendor-payments', icon: IndianRupee },
         ]
       },
@@ -206,6 +210,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: 'Finance & Compliance',
         items: [
           { name: 'KYC', path: '/district-admin/kyc', icon: FileCheck2 },
+          { name: 'Quality Check', path: '/district-admin/quality-check', icon: ClipboardCheck },
           { name: 'Payments', path: '/district-admin/payments', icon: IndianRupee },
           { name: 'Business Reports', path: '/district-admin/reports', icon: BarChart3 },
           { name: 'Tasks', path: '/district-admin/tasks', icon: ClipboardList },
@@ -261,6 +266,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: 'Vendors',
         items: [
           { name: 'Vendors', path: '/divisional-admin/vendors', icon: Store },
+          { name: 'Vendor Subscription', path: '/divisional-admin/vendor-subscriptions', icon: Receipt },
           { name: 'Vendor Payment Status', path: '/divisional-admin/vendor-payments', icon: IndianRupee },
         ]
       },
@@ -280,6 +286,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: 'Finance & Compliance',
         items: [
           { name: 'KYC', path: '/divisional-admin/kyc', icon: FileCheck2 },
+          { name: 'Quality Check', path: '/divisional-admin/quality-check', icon: ClipboardCheck },
           { name: 'Payments', path: '/divisional-admin/payments', icon: IndianRupee },
           { name: 'Business Reports', path: '/divisional-admin/reports', icon: BarChart3 },
           { name: 'Tasks', path: '/divisional-admin/tasks', icon: ClipboardList },
@@ -300,6 +307,19 @@ export function Sidebar({ isOpen, setIsOpen }) {
         title: '',
         items: [
           { name: 'Dashboard', path: '/pincode-admin/dashboard', icon: LayoutDashboard },
+        ]
+      },
+      {
+        title: 'Managers',
+        items: [
+          { name: 'Pincode Manager', path: '/pincode-admin/pincode-manager', icon: Sliders },
+        ]
+      },
+      {
+        title: 'Agents',
+        items: [
+          { name: 'Pincode Agent', path: '/pincode-admin/agents', icon: UserPlus },
+          { name: 'Agent Payments', path: '/pincode-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {
@@ -327,17 +347,17 @@ export function Sidebar({ isOpen, setIsOpen }) {
           { name: 'Technicians', path: '/pincode-admin/technicians', icon: Wrench },
           { name: 'Executives', path: '/pincode-admin/executives', icon: UserCheck },
           { name: 'Support Team', path: '/pincode-admin/support-team', icon: Headphones },
-          { name: 'Agents', path: '/pincode-admin/agents', icon: UserPlus },
-          { name: 'Agent Payments', path: '/pincode-admin/agent-payments', icon: IndianRupee },
         ]
       },
       {
         title: 'Finance & Compliance',
         items: [
           { name: 'KYC', path: '/pincode-admin/kyc', icon: FileCheck2 },
+          { name: 'Quality Check', path: '/pincode-admin/quality-check', icon: ClipboardCheck },
           { name: 'Business Reports', path: '/pincode-admin/business-reports', icon: BarChart3 },
-          { name: 'Pincode Manager', path: '/pincode-admin/pincode-manager', icon: Sliders },
           { name: 'Payments', path: '/pincode-admin/payments', icon: IndianRupee },
+          { name: 'Tasks', path: '/pincode-admin/tasks', icon: ClipboardList },
+          { name: 'Queries', path: '/pincode-admin/queries', icon: CircleHelp },
         ]
       },
       {

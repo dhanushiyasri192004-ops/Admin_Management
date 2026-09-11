@@ -17,7 +17,8 @@ const db = {
   agents: JSON.parse(JSON.stringify(seed.agents)),
   agentPayments: JSON.parse(JSON.stringify(seed.agentPayments)),
   agentActivities: JSON.parse(JSON.stringify(seed.agentActivities || [])),
-  kycRecords: JSON.parse(JSON.stringify(seed.kycRecords))
+  kycRecords: JSON.parse(JSON.stringify(seed.kycRecords)),
+  qualityCheckRecords: JSON.parse(JSON.stringify(seed.qualityCheckRecords || []))
 };
 
 /**

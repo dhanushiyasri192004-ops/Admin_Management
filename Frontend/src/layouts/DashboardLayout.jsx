@@ -14,12 +14,12 @@ export function DashboardLayout() {
   const isDashboardPage = location.pathname.endsWith('/dashboard');
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#0b1322] text-slate-100' : 'bg-[#f8fafc] text-[#001D51]'} flex transition-colors duration-200`}>
+    <div className={`min-h-screen ${isDark ? 'bg-[#0b1322] text-slate-100' : 'bg-[#f8fafc] text-[#001D51]'} flex transition-colors duration-200 overflow-x-hidden`}>
       {/* Sidebar Navigation */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 dashboard-content-area">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-60 dashboard-content-area overflow-x-hidden">
         {/* Header is shown strictly on dashboard page only */}
         {isDashboardPage && <Header setIsSidebarOpen={setIsSidebarOpen} />}
 
